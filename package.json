@@ -1,0 +1,28 @@
+{
+  "name": "GrowBox",
+  "version": "0.0.1",
+  "private": true,
+  "minimum-stability": "dev",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.1",
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-cli": "latest",
+    "gulp-concat": "latest",
+    "gulp-copy": "latest",
+    "gulp-postcss": "latest",
+    "gulp-rename": "latest",
+    "gulp-sass": "latest",
+    "gulp-sourcemaps": "latest",
+    "gulp-tap": "latest",
+    "postcss": "latest",
+    "postcss-import": "latest",
+    "postcss-nested": "latest",
+    "postcss-simple-vars": "latest"
+  }
+}

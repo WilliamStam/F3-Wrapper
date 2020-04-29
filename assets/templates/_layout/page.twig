@@ -1,0 +1,25 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="description" content="{{ description }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link rel="stylesheet" type="text/css" href="{{ ASSETS }}/css/styles.css">
+    {% block css %}{% endblock %}
+</head>
+
+<body>
+    {% include "_layout/navbar.twig" %}
+    {% block content %}{% endblock %}
+
+    <script src="{{ ASSETS }}/js/libraries.js"></script>
+    {% block script %}{% endblock %}
+
+    {% include "_layout/profiler.twig" %}
+</body>
+
+</html>

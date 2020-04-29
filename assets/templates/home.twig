@@ -1,0 +1,95 @@
+{% extends "_layout\\page.twig" %}
+
+
+{% block title %}My awesome page{% endblock %}
+{% block content %}
+
+HOME PAGE CONTENT <i class="far fa-angry" style="font-size:10rem;"></i>
+<hr>
+{{ t }}
+<hr>
+Search: <code>{{ search }}</code>
+<hr>
+CSRF (create a hidden field with these)
+<code>
+   name="<span>@@</span>CSRF_NAME<span>@@</span>" value="<span>@@</span>CSRF_TOKEN<span>@@</span>" 
+</code>
+
+for ajax include this in your layout/template.twig file
+
+<pre>
+&lt;script type="text/javascript">
+    $.ajaxPrefilter(function(options, originalOptions, jqXHR){
+        if (options.type.toLowerCase() === "post") {
+            options.data = options.data || "";
+            options.data += options.data?"&":"";
+            options.data += "<span>@@</span>CSRF_NAME<span>@@</span>=" + encodeURIComponent('<span>@@</span>CSRF_TOKEN<span>@@</span>');
+        }
+    });
+&lt;/script>
+</pre>
+
+
+<hr>
+<h4>Named Routes</h4>
+<p>
+    <code>
+    $this->system->route("GET @test_controller: /long/ass/folder/structure/testThisShit.@FORMAT", "\\Application\\Controllers\\HomeController->page");
+</code>
+</p>
+
+<a href="{{ 'test_controller'|route('FORMAT=json') }}" class="btn btn-dark">
+    Named Test Controller<br>
+    <code>'test_controller'|route('FORMAT=json')</code> <br> links to:
+    <code>{{ 'test_controller'|route('FORMAT=json') }}</code>
+
+</a>
+
+<a href="{{ 'test_controller'|route('FORMAT=html') }}" class="btn btn-dark">
+    Named Test Controller<br>
+    <code>'test_controller'|route('FORMAT=html')</code> <br> links to:
+    <code>{{ 'test_controller'|route('FORMAT=html') }}</code>
+
+</a>
+
+
+<hr>
+<h4>Images in Assets/images folder</h4>
+<p class="lead">
+    Use <code>{{ '{{' }} ASSETS {{ '}}' }}/images/....</code> or
+    <code> <span>@@</span>ASSETS<span>@@</span>/images/....</code>. this will keep the base asset url (for cachebusting)
+    in check. right now this outputs <code>{{ ASSETS }}</code>
+</p>
+<p>
+    Cropped to 500 x 100<br>
+    <img src="{{ ASSETS }}/images/1235340248116.jpg?width=500&height=100&crop=1">
+</p>
+<p>
+    Not cropped 500 x 100<br>
+    <img src="{{ ASSETS }}/images/1235340248116.jpg?width=500&height=100">
+</p>
+
+<h4>Images in /media folder</h4>
+<p>
+    these work the same way as the Assets images. except that you need to prefix the src with <code>/media/</code>..
+    Follow the same dir structure as your Media folder (<code>config['MEDIA']</code>)
+</p>
+<p>
+    Cropped to 500 x 100<br>
+    <img src="/media/1193454596187.jpg?width=500&height=100&crop=1">
+</p>
+<p>
+    Not cropped 500 x 100<br>
+    <img src="/media/1193454596187.jpg?width=500&height=100">
+</p>
+
+
+
+{% endblock %}
+
+
+
+{% block css %}
+
+
+{% endblock %}

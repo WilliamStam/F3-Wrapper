@@ -1,0 +1,32 @@
+{
+	"name": "williamstam/growbox",
+	"description": "GrowBox",
+	"minimum-stability": "dev",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "William Stam",
+			"email": "william@impreshin.com"
+		}
+	],
+	"config": {
+		"preferred-install": "dist",
+		"sort-packages": true,
+		"optimize-autoloader": true,
+		"platform": {
+			"php": "7.2"
+		}
+	},
+	"require": {
+		"php": "^7.2",
+		"ext-curl": "*",
+		"ext-json": "*",
+		"ext-pdo": "*",
+		"ext-pdo_mysql": "*",
+
+		"bcosca/fatfree-core": "*",
+
+		"filp/whoops": "*",
+		"twig/twig": "^3"
+	}
+}

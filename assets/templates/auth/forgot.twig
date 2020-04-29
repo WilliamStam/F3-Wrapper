@@ -1,0 +1,155 @@
+{% extends "_layout\\page.twig" %}
+
+
+{% block title %}{{ PACKAGE }} | Login{% endblock %}
+{% block content %}
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-xl-7 col-lg-6 col-12 align-self-center">
+            <h1 class="display-1 text-center">{{ PACKAGE }}</h1>
+        </div>
+        <div class="col-xl-5 col-lg-6 col-12 align-self-center">
+            <form action="{{ 'auth_forgot'|route() }}" method="post">
+                <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@">
+                <div class="card bg-white shadow mt-4 {% if state == 1 %}border-{{ style }}{% endif %}">
+                    <div class="card-header">
+                        <h1>Forgot Password</h1>
+                    </div>
+                    {% for row in messages %}
+                        <div class="alert alert-{{ row['type'] }}">
+                            {{ row['message'] }}
+                        </div>
+                    {% endfor %}
+                    <div class="card-body">
+                        <input type="hidden" name="from" value="{{ from }}" />
+                        <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@" />
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" class="form-control{% if errors['email']|length %} is-invalid{% endif %}" id="email" name="email" placeholder="Enter email" value="{{ email }}" required {% if sent %}disabled{% endif %} />
+                            {% for row in errors['email'] %}   
+                                <div class="invalid-feedback">
+                                    {{ row }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                    
+                    {% if sent %}
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <a href="{{ 'auth_login'|route() }}" class="btn btn-link w-100">Login</a>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <button type="submit" class="btn btn-primary w-100" disabled>Link sent</button>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card-footer">
+                            <div class="row">
+                                
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary w-100">Send link</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <a href="{{ 'auth_register'|route() }}" class="btn btn-link w-100">Register</a>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <a href="{{ 'auth_login'|route() }}" class="btn btn-link w-100">Login</a>
+                                </div>
+                            </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+{#}
+
+<section id="page-content" class="h-100">
+	<div class="container h-100">
+		<div id="content-area" class="h-100">
+
+			<div class="row h-100">
+				<div class="col h-100 d-flex" id="left-side-column">
+					<div class="align-self-center w-100 d-100 text-right px-5">
+						<h1 class="display-1">@@PACKAGE@@</h1>
+						<p class="lead">
+						</p>
+
+					</div>
+
+				</div>
+				<div class="col h-100 d-flex  " id="login-form-column">
+
+					<div class="align-self-center w-100">
+						<form class=" w-100 px-5" action="/login" method="post">
+
+							{% if error %}
+								<div class="alert alert-red">
+									{% for row in error %}
+										{{ row }}
+									{% endfor %}
+								</div>
+							{% endif %}
+							{% if warning %}
+								<div class="alert alert-yellow">
+									{% for row in warning %}
+										{{ row }}
+									{% endfor %}
+								</div>
+							{% endif %}
+
+
+							<input type="hidden" name="from" value="{{ from }}" />
+							<input type="hidden" name="@@CSRF@@" value="@@CSRFTOKEN@@" />
+							<div class="form-group">
+								<label for="email">Email address / Username</label>
+								<input type="text" class="form-control" id="email" name="email" placeholder="Enter email" value="{{ username }}" required>
+							</div>
+							<div class="form-group">
+								<label for="password">Password</label>
+								<input type="password" class="form-control" id="password" name="password" placeholder="Password" value="" required>
+							</div>
+							<div class="clearfix"></div>
+
+							<div class="d-flex mt-5">
+								<button type="submit" class="btn btn-primary w-50 ml-auto">Login</button>
+							</div>
+
+						</form>
+					</div>
+
+
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+
+
+</section>
+#}
+
+
+{% endblock %}
+
+
+
+{% block css %}
+<link rel="stylesheet" href="{{ ASSETS }}/css/auth/login.css">
+
+{% endblock %}
