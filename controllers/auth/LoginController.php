@@ -28,6 +28,8 @@ class LoginController extends AbstractController {
             $data['errors']['password'][] = "";
 
             $data['email'] = $this->system->get("POST.email");
+            $data['from'] = $this->system->get("POST.from");
+
             $password = $this->system->get("POST.password");
             
             $this->system->set("COOKIE.email", $data['email']);
@@ -37,8 +39,8 @@ class LoginController extends AbstractController {
 
             $data['attempts'] = $loginObject->getAttempts();
 
-            if ($loginObject->getAttempts() > $this->system->get("CONFIG")['LOGIN']['ATTEMPTS'] / 3){
-                $attempts_remaining = $this->system->get("CONFIG")['LOGIN']['ATTEMPTS'] - $data['attempts'];
+            if ($loginObject->getAttempts() > $this->system->get("CONFIG")['AUTH']['LOGIN']['ATTEMPTS'] / 3){
+                $attempts_remaining = $this->system->get("CONFIG")['AUTH']['LOGIN']['ATTEMPTS'] - $data['attempts'];
 
                 $data['messages'][] = array(
                     "type"=>"danger",
@@ -47,11 +49,14 @@ class LoginController extends AbstractController {
             }
 
             if ($login){
+                if ($this->system->get("POST.from")){
+                    $this->system->reroute($this->system->get("POST.from"));
+                }
                 $this->system->reroute("@index");
             }
         }
         
         
-        $this->render("Auth/login.twig", $data);
+        $this->render("auth/login.twig", $data);
     }
 }

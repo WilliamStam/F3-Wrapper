@@ -14,11 +14,10 @@
 		"sort-packages": true,
 		"optimize-autoloader": true,
 		"platform": {
-			"php": "7.2"
+			"php": "7.3"
 		}
 	},
 	"require": {
-		"php": "^7.2",
 		"ext-curl": "*",
 		"ext-json": "*",
 		"ext-pdo": "*",
@@ -26,7 +25,9 @@
 
 		"bcosca/fatfree-core": "*",
 
-		"filp/whoops": "*",
+        "filp/whoops": "*",
+        "symfony/var-dumper": "*",
+        
 		"twig/twig": "^3"
 	}
 }

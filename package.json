@@ -6,7 +6,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.1",
     "bootstrap": "^4.4.1",
-    "jquery": "^3.4.1"
+    "jquery": "^3.5.1"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
@@ -17,7 +17,7 @@
     "gulp-copy": "latest",
     "gulp-postcss": "latest",
     "gulp-rename": "latest",
-    "gulp-sass": "latest",
+    "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "latest",
     "gulp-tap": "latest",
     "postcss": "latest",

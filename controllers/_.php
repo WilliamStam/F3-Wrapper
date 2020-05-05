@@ -39,12 +39,13 @@ class _ {
     static function routes($system) {
 
         foreach (array(
-            \Controllers\Auth\_::class,
+            \controllers\auth\_::class,
+            \controllers\admin\_::class,
         ) as $router) {
             $router::routes($system);
         }
 
-        $system->route("GET|POST|DELETE @index: /", "\\Controllers\\TestController->page");
+        $system->route("GET|POST|DELETE @index: /", "\\controllers\\TestController->page");
 
         $system->route("GET /test", function ($system) {
             $system->reroute('@test_controller(@FORMAT=html)');
@@ -52,7 +53,7 @@ class _ {
         $system->route("GET /test.@FORMAT", function ($system) {
             $system->reroute('@test_controller');
         });
-        $system->route("GET|POST|DELETE @test_controller: /long/ass/folder/structure/testThisShit.@FORMAT", "\\Controllers\\HomeController->page");
+        $system->route("GET|POST|DELETE @test_controller: /long/ass/folder/structure/testThisShit.@FORMAT", "\\controllers\\HomeController->page");
 
         $system->route("GET /php", function () {
             phpinfo();

@@ -44,6 +44,20 @@
                             {% endfor %}
                            
                         </div>
+
+                        
+                        {#}
+                        <div class="form-group">
+                            <script src="https://www.google.com/recaptcha/api.js?render=_reCAPTCHA_site_key"></script>
+                            <script>
+                            grecaptcha.ready(function() {
+                                grecaptcha.execute('reCAPTCHA_site_key', {action: 'register'});
+                            });
+                            </script>
+                           
+                        </div>
+{#}
+
                         
                     </div>
                    

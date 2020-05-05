@@ -10,16 +10,17 @@ class ForgotModel extends AbstractModel {
 
     protected $code = null;
     protected $user = null;
+    protected $errors = array();
 
     protected $session = null;
     protected $ip = null;
     protected $agent = null;
 
     protected $attempts = array(
-        "type"=>__CLASS__,
-        "minutes"=>0,
-        "allowed">0,
-        "count"=>0
+        "type" => __CLASS__,
+        "minutes" => 0,
+        "allowed" > 0,
+        "count" => 0,
     );
 
     function __construct($session) {
@@ -30,19 +31,18 @@ class ForgotModel extends AbstractModel {
         $this->ip = $this->system->ip();
         $this->agent = $this->system->agent();
 
-        $this->attempts['allowed'] = $this->system->get("CONFIG")['FORGOT']['ATTEMPTS'];
-        $this->attempts['minutes'] = $this->system->get("CONFIG")['FORGOT']['MINUTES'];
+        $this->attempts['allowed'] = $this->system->get("CONFIG")['AUTH']['FORGOT']['ATTEMPTS'];
+        $this->attempts['minutes'] = $this->system->get("CONFIG")['AUTH']['FORGOT']['MINUTES'];
     }
 
-    function generateCode(UserModel $user) : string {
+    function generateCode(UserModel $user): string {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
-        $return =  false;
+        $return = false;
 
-        $this->checkAttempts(429,"Tried to generate a code too many times");
-        
+        $this->checkAttempts(429, "Tried to generate a code too many times");
 
         $this->setUser($user);
-        $this->setCode( md5($this->system->get("SID")."|".$user->getEmail()."|".$user->getSalt()."|".$this->system->get("CONFIG")['SEED'] ."|".uniqid('', true)) );
+        $this->setCode(md5($this->system->get("SID") . "|" . $user->getEmail() . "|" . $user->getSalt() . "|" . $this->system->get("CONFIG")['SEED'] . "|" . uniqid('', true)));
 
         $this->DB->exec("
             INSERT IGNORE INTO system_login_codes (
@@ -58,22 +58,21 @@ class ForgotModel extends AbstractModel {
             )
         ", array(
             ":session_id" => $this->session,
-            ":user_key" => $this->getUser()->user_key(),
+            ":user_key" => $this->user->userKey(),
             ":code" => $this->getCode(),
         ));
 
         $payload = array(
-            "user_key"=>$this->getUser()->user_key(),
-            "code"=>$this->getCode()
+            "user_key" => $this->user->userKey(),
+            "code" => $this->getCode(),
         );
-        
+
         $this->saveAttempt($payload);
 
         $profiler->stop();
         return $this->getCode();
     }
 
-    
     /**
      * Get the value of code
      */
@@ -107,11 +106,9 @@ class ForgotModel extends AbstractModel {
     public function setUser(UserModel $user) {
         $this->user = $user;
 
-        
-
         return $this;
     }
-    
+
     /**
      * Get the value of session
      */
@@ -135,5 +132,23 @@ class ForgotModel extends AbstractModel {
      */
     public function getAttempts() {
         return $this->attempts['count'];
+    }
+
+    /**
+     * Get the value of errors
+     */
+    public function getErrors() {
+        return $this->errors;
+    }
+
+    /**
+     * Set the value of errors
+     *
+     * @return  self
+     */
+    public function setErrors($errors) {
+        $this->errors = $errors;
+
+        return $this;
     }
 }

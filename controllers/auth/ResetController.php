@@ -87,7 +87,7 @@ class ResetController extends AbstractController {
 
         
 
-        $this->render("Auth/reset.twig", $data);
+        $this->render("auth/reset.twig", $data);
     }
 
 }

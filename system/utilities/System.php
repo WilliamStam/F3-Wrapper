@@ -28,25 +28,7 @@ class System {
         return $system->get("COLLECTION")->add($obj);
        
     }
-    static function mail(){
-        $system = \Base::instance();
-
-        $return = new \SMTP(
-            $system->get("CONFIG")['SMTP']['HOST'],
-            $system->get("CONFIG")['SMTP']['PORT'],
-            $system->get("CONFIG")['SMTP']['SCHEME'],
-            $system->get("CONFIG")['SMTP']['USERNAME'],
-            $system->get("CONFIG")['SMTP']['PASSWORD'],
-            $system->get("CONFIG")['SMTP']['CTX'],
-        );
-
-        foreach ($system->get("CONFIG")['EMAIL_HEADERS'] as $key=>$value){
-            $return->set($key, $value);
-        }
-
-        return $return;
-
-    }
+    
 
   
     

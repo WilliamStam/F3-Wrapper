@@ -2,18 +2,14 @@
 
 namespace controllers\auth;
 
-use system\Output;
-use system\Template;
-
 abstract class AbstractController extends _ {
-    
 
-   function messages(){
+    function messages() {
         $return = array();
-        if ($this->system->get("GET.success")){
+        if ($this->system->get("GET.success")) {
             $return[] = array(
-                "type"=>"success",
-                "message"=>$this->system->get("GET.success")
+                "type" => "success",
+                "message" => $this->system->get("GET.success"),
             );
         }
         if ($this->system->get("GET.info")) {
@@ -22,19 +18,19 @@ abstract class AbstractController extends _ {
                 "message" => $this->system->get("GET.info"),
             );
         }
-        if ($this->system->get("GET.warning")){
+        if ($this->system->get("GET.warning")) {
             $return[] = array(
-                "type"=>"warning",
-                "message"=>$this->system->get("GET.warning")
+                "type" => "warning",
+                "message" => $this->system->get("GET.warning"),
             );
         }
-        if ($this->system->get("GET.error")){
+        if ($this->system->get("GET.error")) {
             $return[] = array(
-                "type"=>"danger",
-                "message"=>$this->system->get("GET.error")
+                "type" => "danger",
+                "message" => $this->system->get("GET.error"),
             );
         }
         return $return;
-   }
+    }
 
 }

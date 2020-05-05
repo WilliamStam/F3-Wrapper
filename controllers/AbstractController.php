@@ -11,7 +11,7 @@ abstract class AbstractController extends _ {
 
     function render($template = "", $data = array()) {
 
-        $data['USER'] = $this->system->get("USER");
+        // $data['USER'] = $this->system->get("USER");
 
         if (is_string($template)) {
             $templateObject = new Template($template);

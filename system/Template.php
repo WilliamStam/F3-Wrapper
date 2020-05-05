@@ -68,6 +68,9 @@ class Template {
             $twigData[$k] = $v;
         };
         $twigData['DEBUG'] = $system->get("DEBUG");
+        $twigData['USER'] = $system->get("USER");
+        $twigData['SYSTEM'] = $system;
+
 
         $body = $twig->render($this->TEMPLATE, $twigData);
 

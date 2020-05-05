@@ -1,12 +1,10 @@
 <?php
 namespace models\users;
 
-use \system\Collection;
-use \system\utilities\System;
-
 use \models\AbstractModel;
 use \models\DBfetchTrait;
-
+use \system\Collection;
+use \system\utilities\System;
 
 class UserModel extends AbstractModel {
     use DBfetchTrait;
@@ -17,24 +15,25 @@ class UserModel extends AbstractModel {
     protected $password = null;
     protected $salt = null;
     protected $settings = null;
+    
+    protected $permissions = null;
 
     function __construct($DB = null) {
         parent::__construct($DB);
         $this
-            ->_select("users.*")
-            ->_from("users")
+            ->_select("system_users.*")
+            ->_from("system_users")
         ;
     }
 
-    function user_key(){
+    function userKey() {
         return $this->getId() . "|" . $this->getSalt();
     }
-
 
     function get($id = null) {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         if ($id != null) {
-            $this->_where("users.id = :id", array(":id" => $id));
+            $this->_where("system_users.id = :id", array(":id" => $id));
         }
         $this->_limit("0,1");
 
@@ -46,6 +45,8 @@ class UserModel extends AbstractModel {
         $profiler->stop();
         return $this;
     }
+
+
     function getAll() {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         $collection = new Collection();
@@ -61,15 +62,31 @@ class UserModel extends AbstractModel {
         $profiler->stop();
         return $collection;
     }
+    function getCount() {
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
 
+        $this
+            ->_select("COUNT(system_users.id) as c")
+        ;
+        $records = $this->fetch_data();
 
-    function save($allow_insert=true){
-        $table=new \DB\SQL\Mapper($this->DB,'users');
-        $table->load(["id = :ID",array(":ID"=>$this->id)]);
+        foreach ($records as $record) {
+            $profiler->stop();
+            return $record['c'];
+        }
+
+        $profiler->stop();
+        return 0;
+    }
+
+    function save($allow_insert = true) {
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+        $table = new \DB\SQL\Mapper($this->DB, 'system_users');
+        $table->load(["id = :ID", array(":ID" => $this->id)]);
         $fields = $table->fields();
 
         $changes = array();
-        foreach (get_object_vars($this) as $key=>$value){
+        foreach (get_object_vars($this) as $key => $value) {
             if ($value === "") {
                 $value = NULL;
             }
@@ -92,22 +109,81 @@ class UserModel extends AbstractModel {
             }
         }
         $save = true;
-        
-        if ($table->dry() && !$allow_insert){
+
+        if ($table->dry() && !$allow_insert) {
             $save = false;
         }
 
-        if ($save){
+        if ($save) {
             $table->save();
             $id = $table->_id;
 
             // return $this->get($id);
+            $profiler->stop();
             return $this;
         }
 
-
-
+        $profiler->stop();
     }
+    function fetchPermissions(){
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+        $return = array();
+
+        $records = $this->DB->exec("
+            SELECT 
+                DISTINCT records.permission 
+            FROM (
+                SELECT 
+                    `permission`
+                FROM 
+                    `system_users_permissions` 
+                WHERE 
+                    user_id = :user_id
+                    
+                UNION ALL
+            
+                SELECT 
+                    `permission`
+                FROM 
+                    system_roles_permissions 
+                        INNER JOIN system_users_roles 
+                            ON system_users_roles.role_id = system_roles_permissions.role_id
+                WHERE 
+                    system_users_roles.user_id = :user_id  
+            ) records
+        ",array(
+            ":user_id"=>$this->getId()
+        ));
+
+        $return = array_map(function($item){ 
+            return $item['permission'];
+        },$records);
+
+        $this->permissions = $return;
+
+        $profiler->stop();
+        return $this;
+    }
+
+    function hasPermissions($check_against = array()){
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+        $return = true;
+
+        if ($this->permissions==null && $this->getId()){
+            $this->fetchPermissions();
+        } 
+        
+        foreach ($check_against as $perm){
+            if (!in_array($perm,$this->permissions)){
+                $return = false;
+            }
+        }
+
+        $profiler->stop();
+        return $return;
+    }
+
+
 
 
     /**
@@ -182,7 +258,7 @@ class UserModel extends AbstractModel {
         return $this;
     }
     public function setPassword($password) {
-        $this->password = password_hash($password,PASSWORD_DEFAULT);
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
         $this->salt = uniqid('', true);
 
         return $this;
@@ -206,12 +282,10 @@ class UserModel extends AbstractModel {
         return $this;
     }
 
-
     /**
      * Get the value of salt
-     */ 
-    public function getSalt()
-    {
+     */
+    public function getSalt() {
         return $this->salt;
     }
 }

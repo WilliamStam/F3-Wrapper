@@ -1,7 +1,7 @@
 <?php
 namespace controllers\auth;
 
-use models\auth\ForgotModel;
+use \models\auth\ForgotModel;
 use \system\Output;
 use \system\Profiler;
 use \system\Debug;
@@ -13,6 +13,8 @@ use \system\utilities\System;
 use \models\auth\ResetModel;
 use \models\users\UserModel;
 
+// use \services\Mail;
+
 class ForgotController extends AbstractController {
     
     function page() {
@@ -23,7 +25,6 @@ class ForgotController extends AbstractController {
         $data['messages'] = $this->messages();
 
         
-
 
         $data['messages'][] = array(
             "type"=>"info",
@@ -69,21 +70,30 @@ class ForgotController extends AbstractController {
 
                 $body = $template->render();
 
-                
-                try {
-                    $email = System::mail();
-                    $email->set("To",$user->getEmail());
-                    $email->set("Subject",$this->system->get("PACKAGE")." | Password reset link");
+                // echo $body;
+                // exit();
+                $sent = true;
 
-                    //$email->send($body);
-                } catch (\Throwable $e){
+                // System::debug($this->system->get("CONFIG"));
+
+                $email = new \Services\Mail();
+                $email->setTo($user->getEmail());
+                $email->setSubject($this->system->get("PACKAGE")." | Password reset link");
+                $email->setBody($body);
+
+                if ($this->system->get("CONFIG")['SMTP']){
+                    $sent = $email->send();
+                }
+
+                if (!$sent){
                     $this->system->reroute('@auth_forgot?error=Email+couldnt+be+sent+at+this+time');
                 }
+               
             }
             $this->system->reroute('@auth_reset?success=Email+was+sent+with+the+code');
 
         }
-        $this->render("Auth/forgot.twig", $data);
+        $this->render("auth/forgot.twig", $data);
 
     }
 

@@ -28,6 +28,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="/php">PHP</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ 'admin_roles'|route() }}">Roles</a>
+            </li>
 
         </ul>
         {% if USER.getId() %}
@@ -58,6 +61,7 @@
         
         <form class="form-inline my-2 my-lg-0" method="POST" action="{{ 'auth_login'|route() }}">
             <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@">
+            <input type="hidden" name="from" value="{{ SYSTEM.get('URI') }}">
             <input class="form-control mr-sm-2" type="email" placeholder="Email" aria-label="email" name="email"
                 value="{{ 'COOKIE.email'|get() }}">
                 <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="password" name="password" value="">

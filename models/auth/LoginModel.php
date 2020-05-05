@@ -10,6 +10,9 @@ class LoginModel extends AbstractModel {
 
     protected $session = null;
     protected $user_key = null;
+    
+    protected $errors = array();
+   
     protected $ip = null;
     protected $agent = null;
     protected $attempts = array(
@@ -27,8 +30,8 @@ class LoginModel extends AbstractModel {
         $this->ip = $this->system->ip();
         $this->agent = $this->system->agent();
 
-        $this->attempts['allowed'] = $this->system->get("CONFIG")['LOGIN']['ATTEMPTS'];
-        $this->attempts['minutes'] = $this->system->get("CONFIG")['LOGIN']['MINUTES'];
+        $this->attempts['allowed'] = $this->system->get("CONFIG")['AUTH']['LOGIN']['ATTEMPTS'];
+        $this->attempts['minutes'] = $this->system->get("CONFIG")['AUTH']['LOGIN']['MINUTES'];
     }
 
     function login($username, $password) {
@@ -38,7 +41,7 @@ class LoginModel extends AbstractModel {
         $this->checkAttempts(429,"Too many failed login attempts");
 
         $user = (new UserModel())
-            ->_where("LOWER(users.email) = :email", array(
+            ->_where("LOWER(system_users.email) = :email", array(
                 ":email" => strtolower($username)
             ))
             ->get()
@@ -69,7 +72,7 @@ class LoginModel extends AbstractModel {
         $this->clearAttempts();
 
 
-        $user_key = $user->user_key();
+        $user_key = $user->userKey();
         $this->DB->exec("
             UPDATE system_sessions SET 
                 user_key = :user_key 
@@ -139,6 +142,26 @@ class LoginModel extends AbstractModel {
      */
     public function setAttempts($attempts) {
         $this->attempts = $attempts;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of errors
+     */ 
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * Set the value of errors
+     *
+     * @return  self
+     */ 
+    public function setErrors($errors)
+    {
+        $this->errors = $errors;
 
         return $this;
     }

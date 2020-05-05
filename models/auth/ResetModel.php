@@ -11,6 +11,8 @@ class ResetModel extends AbstractModel {
     protected $code = null;
     protected $user = null;
 
+    protected $errors = array();
+
     protected $session = null;
     protected $ip = null;
     protected $agent = null;
@@ -19,7 +21,8 @@ class ResetModel extends AbstractModel {
         "type"=>__CLASS__,
         "minutes"=>0,
         "allowed">0,
-        "count"=>0
+        "count"=>0,
+        "lifespan_minutes"=>0
     );
 
     function __construct($session) {
@@ -30,8 +33,9 @@ class ResetModel extends AbstractModel {
         $this->ip = $this->system->ip();
         $this->agent = $this->system->agent();
 
-        $this->attempts['allowed'] = $this->system->get("CONFIG")['RESET']['ATTEMPTS'];
-        $this->attempts['minutes'] = $this->system->get("CONFIG")['RESET']['MINUTES'];
+        $this->attempts['allowed'] = $this->system->get("CONFIG")['AUTH']['RESET']['ATTEMPTS'];
+        $this->attempts['minutes'] = $this->system->get("CONFIG")['AUTH']['RESET']['MINUTES'];
+        $this->attempts['lifespan_minutes'] = $this->system->get("CONFIG")['AUTH']['RESET']['TOKEN_MINUTES'];
     }
 
     function generateCode(UserModel $user) : string {
@@ -55,7 +59,7 @@ class ResetModel extends AbstractModel {
             )
         ", array(
             ":session_id" => $this->session,
-            ":user_key" => $this->getUser()->user_key(),
+            ":user_key" => $this->getUser()->userKey(),
             ":code" => $this->getCode(),
         ));
 
@@ -69,7 +73,7 @@ class ResetModel extends AbstractModel {
         $this->checkAttempts(429,"Too many failed reset attempts");
 
         $user = (new UserModel())
-            ->_where("LOWER(users.email) = :email", array(
+            ->_where("LOWER(system_users.email) = :email", array(
                 ":email" => strtolower($email)
             ))
             ->get();
@@ -82,9 +86,9 @@ class ResetModel extends AbstractModel {
                 FROM 
                     system_login_codes    
                 WHERE
-                    user_key = :user_key AND code = :code AND used = '0' AND timestamp >= (NOW() - INTERVAL {$this->system->get("CONFIG")['RESET']['TOKEN_MINUTES']} MINUTE)
+                    user_key = :user_key AND code = :code AND used = '0' AND timestamp >= (NOW() - INTERVAL {$this->attempts['lifespan_minutes']} MINUTE)
             ",array(
-                ":user_key"=>$user->user_key(),
+                ":user_key"=>$user->userKey(),
                 ":code"=>$code
             ));
 
@@ -99,7 +103,7 @@ class ResetModel extends AbstractModel {
                     WHERE
                         user_key = :user_key AND code = :code
                 ",array(
-                    ":user_key"=>$user->user_key(),
+                    ":user_key"=>$user->userKey(),
                     ":code"=>$code
                 ));
 

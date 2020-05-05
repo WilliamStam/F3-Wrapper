@@ -29,23 +29,32 @@ $return = array(
     // fatfree includes a tag stripping function that uses this list to remove tags from user input
     "TAGS"=>'p,br,b,strong,i,italics,em,h1,h2,h3,h4,h5,h6,div,span,blockquote,pre,cite,ol,li,ul', 
     
-    // login attempts to stop brute force
-	"LOGIN"=>array(
-		"ATTEMPTS"=>5,
-        "MINUTES"=>10,
+    "AUTH"=>array(
+        // login attempts to stop brute force
+        "LOGIN"=>array(
+            "ATTEMPTS"=>5,
+            "MINUTES"=>10,
+        ),
+        // auth reset stuff
+        "RESET"=>array(
+            "ATTEMPTS"=>5,
+            "MINUTES"=>10,
+            "TOKEN_MINUTES"=>10 // how long a token is valid for
+        ),
+        // auth reset stuff
+        "FORGOT"=>array(
+            "ATTEMPTS"=>5,
+            "MINUTES"=>10,
+            
+        ),
+        // auth register stuff
+        "REGISTER"=>array(
+            "ATTEMPTS"=>5,
+            "MINUTES"=>10,
+            
+        ),
     ),
-    // auth reset stuff
-    "RESET"=>array(
-		"ATTEMPTS"=>5,
-        "MINUTES"=>10,
-        "TOKEN_MINUTES"=>10 // how long a token is valid for
-    ),
-    // auth reset stuff
-    "FORGOT"=>array(
-		"ATTEMPTS"=>5,
-        "MINUTES"=>10,
-        
-    ),
+    
     "SMTP"=>array(
         "HOST"=>"localhost",
         "PORT"=>25,
@@ -55,7 +64,7 @@ $return = array(
         "CTX"=>NULL,
         "ENABLED"=>false
     ),
-    // "SMTP"=>False,
+    "SMTP"=>False,
     "EMAIL_HEADERS"=>array(
         "Errors-to"=>"info@growbox.co.za",
         "Reply-to"=>"info@growbox.co.za",
@@ -63,9 +72,13 @@ $return = array(
         "sender"=>"system@growbox.co.za",
     ),
 
+    "reCAPTCHA"=>array(
+        "SITE_KEY"=>null,
+        "SECRET_KEY"=>null
+    ),
     
     // Seed
-    "SEED"=>'$uem&Sl&#hds*U@1!VP15HLvZTd1i$C8U7t7Ds92m$DUd2'
+    "SEED"=>'secret_string_of_chars'
 );
 
 return $return;

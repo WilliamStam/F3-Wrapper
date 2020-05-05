@@ -19,6 +19,7 @@ spl_autoload_register(function ($class) {
     $path = str_replace(array("\\", "/", "//", "\\\\"), DIRECTORY_SEPARATOR, $path);
     $path = $path . ".php";
 
+       
     if (file_exists($path)) {
         include ($path);
     } else {
@@ -217,17 +218,6 @@ if ($system->get("DEBUG")) {
 
 
 
-$user = false;
-if ($system->get("SESSION.user_id")){
-    $profiler = System::profiler("Find current user");
-    $user = ( new Models\UserModel() )->get($system->get("SESSION.user_id"));
-    $profiler->stop();
-}
-
-
-
-
-// System::debug($system->get("SESSION.user_id"),$user);
 
 $system->set("USER",(new CurrentUserModel())->get($system->get("SID")));
 
