@@ -1,0 +1,25 @@
+.navbar {
+    padding-top:0;
+    padding-bottom:0;
+    line-height: 1;
+    .nav-item {
+       
+        &.active {
+            color:#fff;
+            background: $primary;
+            .nav-link {
+                color:#fff;
+            }
+        }
+        .nav-link {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .navbar-text {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        
+    }
+}
