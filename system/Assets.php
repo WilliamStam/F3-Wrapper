@@ -44,14 +44,116 @@ class Assets {
                 /* INFO: start resizing etc */
                 $width = isset($_GET['width']) ? $_GET['width'] : null;
                 $height = isset($_GET['height']) ? $_GET['height'] : null;
-                $crop = isset($_GET['crop']) && $_GET['crop'] ? true : false;
+                $crop = isset($_GET['crop'])?$_GET['crop']:false;
 
-                $c = $crop ? "1" : "0";
-                $etag = $etag . "|{$width}|{$height}|{$c}";
+
+                $etag = $etag . "|{$width}|{$height}|{$crop}";
                 $this->setEtag($etag);
 
+
                 $image = new \Image($this->PATH, null, $this->FOLDER . DIRECTORY_SEPARATOR);
+
+                $resize_to = array(
+                    "w"=>$width,
+                    "h"=>$height
+                );
+    
+                $crop_to = array();
+                $want_size = array(
+                    "w"=>$width,
+                    "h"=>$height
+                );
+                if ($crop!==false){
+                    $origH = $image->height();
+                    $origW = $image->width();
+    
+                    $wantW = $width;
+                    $wantH = $height;
+    
+                    
+    
+                    $resize_ratio_w = $origW / $width;
+                    $resize_ratio_h = $origH / $height;
+    
+                    if ($resize_ratio_w < $resize_ratio_h){
+                        $height = $origH /  $resize_ratio_w;
+                    } else {
+                         $width = $origW /  $resize_ratio_h;
+                    }
+    
+                    
+                }
+
+
+                
                 $image->resize($width, $height, $crop);
+
+                if ($crop!==false && $width && $height){
+                
+
+                    $crop_parts = $this->system->split($crop);
+                    if ($crop_parts[1] == null){
+                        $crop_parts[1] = $crop_parts[0];
+                    }
+    
+                    $crop_to = array(
+                        "x1"=>0,
+                        "x2"=>$width,
+                        "y1"=>0,
+                        "y2"=>$height,
+                    );
+    
+    
+                    if (! in_array($crop_parts[0],array("0","1","2"))){
+                        $crop_parts[0] = "1";
+                    }
+                    if (! in_array($crop_parts[1],array("0","1","2"))){
+                        $crop_parts[1] = "1";
+                    }
+                    
+    
+                    switch ($crop_parts[0]){ // X
+                        case "0": // left
+                            $crop_to['x1'] = 0;
+                            $crop_to['x2'] = $wantW;
+                            break;
+                        case "1": // center
+                            $offset = ($width - $wantW);
+                            $offset = $offset / 2;
+    
+                            $crop_to['x1'] = $offset > 0 ? $offset : 0;
+                            $crop_to['x2'] = $crop_to['x1'] + $wantW - 1;
+                            break;
+                        case "2": // right
+                            $offset = ($width - $wantW);
+                            $crop_to['x1'] = $offset > 0  ? $offset : 0 ;
+                            $crop_to['x2'] = $width - 1;
+                            break;
+                    }
+    
+                    switch ($crop_parts[1]){ // Y
+                        case "0": // top
+                            $crop_to['y1'] = 0;
+                            $crop_to['y2'] = $wantH;
+                            break;
+                        case "1": // center
+                            $offset = ($height - $wantH);
+                            $offset = $offset / 2;
+                            $crop_to['y1'] = $offset > 0  ? $offset : 0 ;
+                            $crop_to['y2'] = $crop_to['y1'] + $wantH - 1;
+                            break;
+                        case "2": // bottom
+                            $offset = ($height - $wantH);
+                            $crop_to['y1'] = $offset > 0  ? $offset : 0 ;
+                            $crop_to['y2'] = $height - 1;
+                            break;
+                    }
+    
+                  
+    
+                    $image->crop( $crop_to['x1'],$crop_to['y1'],$crop_to['x2'],$crop_to['y2'] );
+                }
+
 
                 $outputMime = str_replace("image/", "", $mimetype);
                 $image->render($outputMime);

@@ -15,7 +15,7 @@ class UserModel extends AbstractModel {
     protected $password = null;
     protected $salt = null;
     protected $settings = null;
-    
+
     protected $permissions = null;
 
     function __construct($DB = null) {
@@ -45,7 +45,6 @@ class UserModel extends AbstractModel {
         $profiler->stop();
         return $this;
     }
-
 
     function getAll() {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
@@ -125,66 +124,128 @@ class UserModel extends AbstractModel {
 
         $profiler->stop();
     }
-    function fetchPermissions(){
+    function fetchPermissions() {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         $return = array();
 
         $records = $this->DB->exec("
-            SELECT 
-                DISTINCT records.permission 
+            SELECT
+                DISTINCT records.permission
             FROM (
-                SELECT 
+                SELECT
                     `permission`
-                FROM 
-                    `system_users_permissions` 
-                WHERE 
+                FROM
+                    `system_users_permissions`
+                WHERE
                     user_id = :user_id
-                    
+
                 UNION ALL
-            
-                SELECT 
+
+                SELECT
                     `permission`
-                FROM 
-                    system_roles_permissions 
-                        INNER JOIN system_users_roles 
+                FROM
+                    system_roles_permissions
+                        INNER JOIN system_users_roles
                             ON system_users_roles.role_id = system_roles_permissions.role_id
-                WHERE 
-                    system_users_roles.user_id = :user_id  
+                WHERE
+                    system_users_roles.user_id = :user_id
             ) records
-        ",array(
-            ":user_id"=>$this->getId()
+        ", array(
+            ":user_id" => $this->getId(),
         ));
 
-        $return = array_map(function($item){ 
+        $return = array_map(function ($item) {
             return $item['permission'];
-        },$records);
+        }, $records);
 
         $this->permissions = $return;
 
         $profiler->stop();
         return $this;
     }
-
-    function hasPermissions($check_against = array()){
+    /**
+     * Check if the user has ALL the passed in permissions (by either role or assigned directly)
+     * @param array/string $check_against: either an array or a single string
+     * can be in either full class path or dot notation ie:
+     *   permissions/some/Permission - mapped to the permission class
+     * OR
+     *   some.Permission - adds in the permissions/some/Permission
+     * 
+     * all permissions must be true for it to return true
+     * 
+     * @return bool
+     */
+    function hasPermissions($check_against = array()) {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
-        $return = true;
+        $return = array();
 
-        if ($this->permissions==null && $this->getId()){
+        if (is_string($check_against)) {
+            $check_against = array($check_against);
+        }
+
+        if ($this->permissions == null && $this->getId()) {
             $this->fetchPermissions();
+        }
+
+        foreach ($check_against as $perm) {
+            if (!class_exists($perm)){
+                $perm = "permissions." . $perm;
+                $perm = str_replace(".", DIRECTORY_SEPARATOR, $perm);
+            }
+
+            $return[$perm] = false;
+
+            if (in_array($perm, $this->permissions)) {
+                $return[$perm] = true;
+            } 
+        }
+
+
+        // System::debug($check_against,$return);
+        $profiler->stop();
+        if(in_array(false, $return, true) === false){
+            return true;
         } 
-        
-        foreach ($check_against as $perm){
-            if (!in_array($perm,$this->permissions)){
-                $return = false;
+        return false;
+    }
+    /**
+     * Check if the user has SOME of the passed in permissions (by either role or assigned directly)
+     * @param array/string $check_against: either an array or a single string
+     * can be in either full class path or dot notation ie:
+     *   permissions/some/Permission - mapped to the permission class
+     * OR
+     *   some.Permission - adds in the permissions/some/Permission
+     * 
+     * if any single permissionr eturns true, this returns true. (usefull if you want to show an admin menu for instance)
+     * 
+     * @return bool
+     */
+    function hasSomePermissions($check_against = array()) {
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+        $return = false;
+
+        if (is_string($check_against)) {
+            $check_against = array($check_against);
+        }
+
+        if ($this->permissions == null && $this->getId()) {
+            $this->fetchPermissions();
+        }
+
+        foreach ($check_against as $perm) {
+            if (!class_exists($perm)){
+                $perm = "permissions." . $perm;
+                $perm = str_replace(".", DIRECTORY_SEPARATOR, $perm);
+            }
+
+            if (in_array($perm, $this->permissions)) {
+                $return = true;
             }
         }
 
         $profiler->stop();
         return $return;
     }
-
-
-
 
     /**
      * Get the value of id
@@ -252,7 +313,7 @@ class UserModel extends AbstractModel {
      *
      * @return  self
      */
-    protected function set_password($password) {
+    protected function set_password($password) { 
         $this->password = $password;
 
         return $this;

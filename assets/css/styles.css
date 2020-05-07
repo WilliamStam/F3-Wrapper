@@ -11667,3 +11667,19 @@ a.text-dark:hover, a.text-dark:focus {
 form {
   margin: 0;
   padding: 0; }
+
+.navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1; }
+  .navbar .nav-item.active {
+    color: #fff;
+    background: #34495e; }
+    .navbar .nav-item.active .nav-link {
+      color: #fff; }
+  .navbar .nav-item .nav-link {
+    padding-top: 1rem;
+    padding-bottom: 1rem; }
+  .navbar .nav-item .navbar-text {
+    padding-top: 1rem;
+    padding-bottom: 1rem; }

@@ -18,7 +18,7 @@ gulp.task('files.scss', () => {
     return gulp.src(['./**/assets/_css/**/*.scss','!./**/assets/_css/**/*.scss/*/**'],{ nodir: true, base: '.' })
         .pipe(sass().on('error', sass.logError))
         .pipe(rename(function(file) {
-            file.dirname = file.dirname.replace(path.sep+'assets'+path.sep+'_css', path.sep+'assets'+path.sep+'css');
+            file.dirname = file.dirname.replace('assets'+path.sep+'_css', 'assets'+path.sep+'css');
             console.log(" > "+file.dirname+path.sep+file.basename+file.extname)
         }))
         .pipe(gulp.dest("."));
@@ -29,7 +29,7 @@ gulp.task('folders.scss', () => {
     return gulp.src('./**/assets/_css/**/*.scss/index.scss',{base: '.' })
         .pipe(sass().on('error', sass.logError))
         .pipe(rename(function(file) {
-            folder = file.dirname.replace(path.sep+'assets'+path.sep+'_css', path.sep+'assets'+path.sep+'css').split(path.sep)
+            folder = file.dirname.replace('assets'+path.sep+'_css','assets'+path.sep+'css').split(path.sep)
             name = folder.pop()
             bname = name.split(".")
             bname.pop()
@@ -50,7 +50,7 @@ gulp.task('files.js', () => {
     return gulp.src(['./**/assets/_js/**/*.js','!./**/assets/_js/**/*.js/*/**'],{ nodir: true, base: '.' })
         
         .pipe(rename(function(file) {
-            file.dirname = file.dirname.replace(path.sep+'assets'+path.sep+'_js', path.sep+'assets'+path.sep+'js');
+            file.dirname = file.dirname.replace('assets'+path.sep+'_js', 'assets'+path.sep+'js');
             console.log(" > "+file.dirname+path.sep+file.basename+file.extname)
         }))
         .pipe(gulp.dest("."));
@@ -63,7 +63,7 @@ gulp.task('folders.js', () => {
 
             folder = file.dirname
             outputFilename = folder.split(path.sep).pop()
-            outputFolder = folder.replace(path.sep+'assets'+path.sep+'_js', path.sep+'assets'+path.sep+'js')
+            outputFolder = folder.replace('assets'+path.sep+'_js', 'assets'+path.sep+'js')
             outputFolder = outputFolder.split(path.sep)
             outputFolder.pop()
             outputFolder = outputFolder.join(path.sep)
@@ -106,8 +106,7 @@ gulp.task('folders.js', () => {
 
 gulp.task('fonts', () => {
     return gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/*')
-        
-        .pipe(gulp.dest("./Application/assets/fonts/"));
+        .pipe(gulp.dest("./assets/fonts/"));
 });
 
 

@@ -75,8 +75,71 @@ for ajax include this in your layout/template.twig file
     Follow the same dir structure as your Media folder (<code>config['MEDIA']</code>)
 </p>
 <p>
-    Cropped to 500 x 100<br>
+    Cropped to 500 x 100 middle<br>
     <img src="/media/1193454596187.jpg?width=500&height=100&crop=1">
+
+    {% set image = "/media/1193454596187.jpg?width=100&height=100" %}
+    <table class="table table-bordered text-center">
+        <tr>
+            <td>
+                <div>
+                    Top Left ?crop=0,0
+                </div>
+                <img src="{{image}}&crop=0,0">
+            </td>
+            <td>
+                <div>
+                    Top Center ?crop=1,0
+                </div>
+                <img src="{{image}}&crop=0,0"></td>
+            <td>
+                <div>
+                    Top Right ?crop=2,0
+                </div>
+                <img src="{{image}}&crop=2,0">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    Midle Left ?crop=0,1
+                </div>
+                <img src="{{image}}&crop=0,1">
+            </td>
+            <td>
+                <div>
+                    Middle Center ?crop=1,1
+                </div>
+                <img src="{{image}}&crop=0,1"></td>
+            <td>
+                <div>
+                    Middle Right ?crop=2,1
+                </div>
+                <img src="{{image}}&crop=2,1">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    Bottom Left ?crop=0,2
+                </div>
+                <img src="{{image}}&crop=0,2">
+            </td>
+            <td>
+                <div>
+                    Bottom Center ?crop=1,2
+                </div>
+                <img src="{{image}}&crop=0,2"></td>
+            <td>
+                <div>
+                    Bottom Right ?crop=2,2
+                </div>
+                <img src="{{image}}&crop=2,2">
+            </td>
+        </tr>
+    </table>
+
+
 </p>
 <p>
     Not cropped 500 x 100<br>

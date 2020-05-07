@@ -7,8 +7,12 @@ use \system\Profiler;
 use \system\utilities\System;
 
 class RolesController extends AbstractController {
+    
     function beforeroute($system, $pattern, $handler) {
         parent::beforeroute($system, $pattern, $handler);
+
+
+        //System::debug($this->system->get("ALIAS"));
 
         $permissions_check = $this->system->get("USER")->hasPermissions(array(
             \permissions\admin\Roles::class,
@@ -20,7 +24,6 @@ class RolesController extends AbstractController {
         }
     }
     function afterroute($system) {
-
 
         
         parent::afterroute($system);
