@@ -1,0 +1,58 @@
+{% extends "_layout\\page.twig" %}
+{% set __page__ = "roles" %}
+
+{% block title %}{{ PACKAGE }} | Admin | Roles{% endblock %}
+{% block content_block %}
+<div class="container">
+
+    <div class="row">
+
+        <div class="col">
+
+            <div class="page-header">
+                <h1 class="display-5">Admin | Roles</h1>
+                <p class="lead m-0">Set the system roles here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<section id="page-content"></section>
+{% endblock %}
+
+
+
+
+{% block css_block %}
+<style>
+    #loadingmask {
+        display: block;
+    }
+</style>
+{% endblock css_block %}
+
+
+{% block script_block %}
+<script src="{{ ASSETS }}/js/admin/_.js"></script>
+<script src="{{ ASSETS }}/js/admin/{{ __page__ }}.js"></script>
+<script>
+$(document).ready(function () {
+    render({{ _context| json_encode() | raw }});
+});
+</script>
+{% endblock script_block %}
+
+
+{% block templates_block %}
+<script type="text/template" id="template-content-list">
+    {% include "admin/"~ __page__ ~"/_list.twig" %}
+</script>
+<script type="text/template" id="template-content-details">
+    {% include "admin/"~ __page__ ~"/_details.twig" %}
+</script>
+
+
+
+
+{% endblock templates_block %}

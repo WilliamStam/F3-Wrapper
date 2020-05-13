@@ -1,0 +1,88 @@
+<form id="page-form" action="?" method="POST">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+
+
+                <fieldset class="">
+                    <legend>Details</legend>
+
+                    <div class="form-group">
+                        <label for="role">Role:</label>
+                        <input type="text" class="form-control" id="role" name="role" placeholder="Role Name"
+                            value="<%= this.details.role||'' %>">
+                        <small class="form-text text-muted">Enter the role's name</small>
+                    </div>
+                     <div class="form-group">
+                        <label for="description">Category:</label>
+                        <select class="form-control" name="category_id" id="category_id">
+                            <option value="">None</option>
+                            <% for (var i in this.categories){ %>
+                            <option value="<%= this.categories[i].id %>" <% if(this.categories[i].id == this.details.category_id){ %>selected<% } %>><%= this.categories[i].category %></option>
+                            <% } %>
+                          </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" class="form-control" id="description" name="description" placeholder="Role Description"
+                            value="<%= this.details.description||'' %>">
+                    </div>
+                   
+                </fieldset>
+            </div>
+                <div class="col-md-4">
+                <fieldset>
+                    <legend>Permissions</legend>
+
+                    <% for (var c in this.permissions){ %>
+                        <section>
+                            <h5>
+                                <%= this.permissions[c].label||'Not Set' %>
+                            </h5>
+    
+                            <% for (var i in this.permissions[c].items){ %>
+                            <div class="form-check border-bottom py-1 pl-5">
+                                <input name="permissions[]" class="form-check-input" type="checkbox"
+                                    value="<%= this.permissions[c].items[i].id %>" id="permission-<%= this.permissions[c].items[i].id %>"
+                                    <% if (this.permissions[c].items[i].selected=='1'){ %>checked<% } %>>
+                                <label class="form-check-label" for="permission-<%= this.permissions[c].items[i].id %>">
+                                    <%= this.permissions[c].items[i].label %>
+                                </label>
+                                <small id="permission-<%= this.permissions[c].items[i].id %>-HelpBlock" class="form-text text-muted">
+                                    <%= this.permissions[c].items[i].description %>
+                                </small>
+                               
+                            </div>
+                            <% } %>
+    
+                        </section>
+                        <% } %>
+
+
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+
+    <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@">
+    <nav class="form-action-bar">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-danger delete-btn" type="button">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+                <div class="col text-right d-flex justify-content-between">
+                    <button class="btn btn-light record w-50" type="button" data-id="">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary w-50" type="submit">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+</form>

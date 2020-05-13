@@ -1,6 +1,6 @@
 <?php
 namespace permissions;
 
-interface PermissionsInterface {
+interface PermissionInterface {
     
 }

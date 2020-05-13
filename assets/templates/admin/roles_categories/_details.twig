@@ -1,0 +1,43 @@
+<form id="page-form" action="?" method="POST">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+
+                <fieldset class="">
+                    <legend>Details</legend>
+
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <input type="text" class="form-control" id="category" name="category" placeholder="Category Name"
+                            value="<%= this.details.category||'' %>">
+                        <small class="form-text text-muted">Enter the category name</small>
+                    </div>
+                    
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+
+    <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@">
+    <nav class="form-action-bar">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-danger delete-btn" type="button">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+                <div class="col text-right d-flex justify-content-between">
+                    <button class="btn btn-light record w-50" type="button" data-id="">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary w-50" type="submit">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+</form>

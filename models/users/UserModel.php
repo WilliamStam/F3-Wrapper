@@ -1,13 +1,19 @@
 <?php
 namespace models\users;
 
+use models\SchemaInterface;
 use \models\AbstractModel;
 use \models\DBfetchTrait;
+use \models\DBsaveTrait;
 use \system\Collection;
 use \system\utilities\System;
+use \system\utilities\Arrays;
+use \system\db\Query;
+use \system\db\Write;
 
 class UserModel extends AbstractModel {
     use DBfetchTrait;
+
 
     protected $id = null;
     protected $name = null;
@@ -15,49 +21,62 @@ class UserModel extends AbstractModel {
     protected $password = null;
     protected $salt = null;
     protected $settings = null;
+    protected $last_active = null;
 
     protected $permissions = null;
+    protected $roles = null;
+
+    protected $errors = array();
+
 
     function __construct($DB = null) {
         parent::__construct($DB);
+        $this
+            ->schema(new UserSchema())
+        ;
+
         $this
             ->_select("system_users.*")
             ->_from("system_users")
         ;
     }
 
+
     function userKey() {
         return $this->getId() . "|" . $this->getSalt();
     }
 
+
+    
     function get($id = null) {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         if ($id != null) {
             $this->_where("system_users.id = :id", array(":id" => $id));
         }
         $this->_limit("0,1");
-
-        $records = $this->fetch_data();
-        foreach ($records as $record) {
-            $this->set_from_array($record);
+        
+        foreach ($this->fetch() as $record) {
+            $this->setFromArray($record,true);
         }
 
         $profiler->stop();
         return $this;
     }
 
+    function fetch(){
+        return $this->query()->fetch();
+    }
+   
     function getAll() {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         $collection = new Collection();
+        $collection->schema($this->schema());
 
-        $records = $this->fetch_data();
-
-        foreach ($records as $record) {
+        foreach ($this->fetch() as $record) {
             $object = clone $this;
-            $object->set_from_array($record);
+            $object->setFromArray($record,true);
             $collection->add($object);
         }
-
         $profiler->stop();
         return $collection;
     }
@@ -66,74 +85,124 @@ class UserModel extends AbstractModel {
 
         $this
             ->_select("COUNT(system_users.id) as c")
+            
         ;
-        $records = $this->fetch_data();
-
-        foreach ($records as $record) {
-            $profiler->stop();
-            return $record['c'];
+        $return = 0;
+        // System::debug($records);
+        foreach ($this->fetch() as $record) {
+            $return = $record['c'];
         }
 
         $profiler->stop();
-        return 0;
+        return $return;
     }
 
     function save($allow_insert = true) {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
-        $table = new \DB\SQL\Mapper($this->DB, 'system_users');
-        $table->load(["id = :ID", array(":ID" => $this->id)]);
-        $fields = $table->fields();
 
-        $changes = array();
         foreach (get_object_vars($this) as $key => $value) {
-            if ($value === "") {
-                $value = NULL;
-            }
-            if (is_array($value)) {
-                $value = json_encode($value);
-            }
-
-            if (isset($table->$key)) {
-                //do shit
-            }
-
-            if (in_array($key, $fields)) {
-                if ($table->$key != $value) {
-                    $changes[$key] = array(
-                        "w" => $table->$key,
-                        "n" => $value,
-                    );
-                    $table->$key = $value;
-                }
-            }
-        }
-        $save = true;
-
-        if ($table->dry() && !$allow_insert) {
-            $save = false;
+            $values[$key] = $value;
         }
 
-        if ($save) {
-            $table->save();
-            $id = $table->_id;
+        $save = new Write('system_users',$this->DB);
+        $save->setWhere("id = :ID",array(":ID" => $this->id));
+        $save->setSaveOnDry(true);
+        $save->setAudit(true);
+        $result = $save->save($values);
 
-            // return $this->get($id);
-            $profiler->stop();
-            return $this;
+        $this->id = $result['id'];
+
+
+        $existing_roles = (array) $this->fetchRoles();
+        $new_roles = (array) $this->roles;
+
+        foreach ($existing_roles as $item){ // DELETE ROLES
+            if ( !in_array($item, $new_roles) ){
+                $save = new Write('system_users_roles',$this->DB);
+                $save->setWhere("user_id = :user_id AND role_id = :role_id",array(":user_id" => $this->id,":role_id"=>$item));
+                $save->delete();
+            }
         }
+        
+        
+
+        foreach ($new_roles as $item){ // ADD ROLES
+            if (!in_array($item,$existing_roles)){
+                $save = new Write('system_users_roles',$this->DB);
+                $save->setWhere("user_id = :user_id AND role_id = :role_id",array(":user_id" => $this->id,":role_id"=>$item));
+                $save->save(array("user_id"=>$this->id,"role_id"=>$item));
+            }
+        }
+
+        
+
+        // System::debug($existing_roles,$this->roles);
+        $profiler->stop();
+        return $result;
+    }
+    function delete(){
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+        
+        $delete = new Write('system_users',$this->DB);
+        $delete->setWhere("id = :ID",array(":ID" => $this->id));
+        $delete->setAudit(true);
+        $result = $delete->delete();
+        
+        foreach ((array)$this->fetchRoles() as $item){
+            $save = new Write('system_users_roles',$this->DB);
+            $save->setWhere("user_id = :user_id AND role_id = :role_id",array(":user_id" => $this->id,":role_id"=>$item));
+            $save->delete();
+        }
+        
+
 
         $profiler->stop();
     }
+
+    function validate() {
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+        $errors = array();
+
+        if (!$this->getName()) {
+            $errors['name'][] = "Name is required";
+        }
+        if ($this->getEmail()) {
+            if (filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL)) {
+                $email_in_use = (new UserModel())
+                    ->_where("LOWER(email) = :email AND id != :id", array(
+                        ":email" => strtolower($this->getEmail()),
+                        ":id" => (string)$this->getId(),
+                    ))
+                    ->getCount();
+
+                // System::debug($this->system->get("DB")->log());
+                if ($email_in_use != "0") {
+                    $errors['email'][] = "The email address is already in use";
+                }
+            } else {
+                $errors['email'][] = "Invalid email format";
+            }
+
+        } else {
+            $errors['email'][] = "e-mail is required";
+        }
+
+
+        $profiler->stop();
+        return $errors;
+    }
+
     function fetchPermissions() {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         $return = array();
 
         $records = $this->DB->exec("
             SELECT
-                DISTINCT records.permission
+                records.permission, 
+                records.source 
             FROM (
                 SELECT
-                    `permission`
+                    `permission`,'user' as source
                 FROM
                     `system_users_permissions`
                 WHERE
@@ -142,26 +211,28 @@ class UserModel extends AbstractModel {
                 UNION ALL
 
                 SELECT
-                    `permission`
+                    `permission`, 'role' as source
                 FROM
                     system_roles_permissions
                         INNER JOIN system_users_roles
                             ON system_users_roles.role_id = system_roles_permissions.role_id
+                        INNER JOIN system_roles
+                            ON system_users_roles.role_id = system_roles.id
                 WHERE
-                    system_users_roles.user_id = :user_id
+                    system_users_roles.user_id = :user_id AND system_roles.id IS NOT null
             ) records
         ", array(
             ":user_id" => $this->getId(),
         ));
 
-        $return = array_map(function ($item) {
-            return $item['permission'];
-        }, $records);
-
-        $this->permissions = $return;
-
+        $return = array(
+        );
+        foreach ($records as $item){
+            $return[$item['source']][] = $item;
+        }
+       
         $profiler->stop();
-        return $this;
+        return $return;
     }
     /**
      * Check if the user has ALL the passed in permissions (by either role or assigned directly)
@@ -170,9 +241,9 @@ class UserModel extends AbstractModel {
      *   permissions/some/Permission - mapped to the permission class
      * OR
      *   some.Permission - adds in the permissions/some/Permission
-     * 
+     *
      * all permissions must be true for it to return true
-     * 
+     *
      * @return bool
      */
     function hasPermissions($check_against = array()) {
@@ -182,30 +253,37 @@ class UserModel extends AbstractModel {
         if (is_string($check_against)) {
             $check_against = array($check_against);
         }
-
+        
         if ($this->permissions == null && $this->getId()) {
-            $this->fetchPermissions();
+            $this->permissions = $this->fetchPermissions();
+        }
+
+        $permissions = array();
+        foreach ((array)$this->permissions as $source){
+            foreach ($source as $item){
+                if (!in_array($item['permission'],$permissions)){
+                    $permissions[] = $item['permission'];
+                }
+            }
         }
 
         foreach ($check_against as $perm) {
-            if (!class_exists($perm)){
+            if (!class_exists($perm)) {
                 $perm = "permissions." . $perm;
-                $perm = str_replace(".", DIRECTORY_SEPARATOR, $perm);
+                $perm = str_replace(".", "\\", $perm);
             }
 
             $return[$perm] = false;
 
-            if (in_array($perm, $this->permissions)) {
+            if (in_array($perm, $permissions)) {
                 $return[$perm] = true;
-            } 
+            }
         }
 
-
-        // System::debug($check_against,$return);
         $profiler->stop();
-        if(in_array(false, $return, true) === false){
+        if (in_array(false, $return, true) === false) {
             return true;
-        } 
+        }
         return false;
     }
     /**
@@ -215,9 +293,9 @@ class UserModel extends AbstractModel {
      *   permissions/some/Permission - mapped to the permission class
      * OR
      *   some.Permission - adds in the permissions/some/Permission
-     * 
+     *
      * if any single permissionr eturns true, this returns true. (usefull if you want to show an admin menu for instance)
-     * 
+     *
      * @return bool
      */
     function hasSomePermissions($check_against = array()) {
@@ -229,22 +307,69 @@ class UserModel extends AbstractModel {
         }
 
         if ($this->permissions == null && $this->getId()) {
-            $this->fetchPermissions();
+            $this->permissions = $this->fetchPermissions();
+        }
+
+        $permissions = array();
+        foreach ((array)$this->permissions as $source){
+            foreach ($source as $item){
+                if (!in_array($item['permission'],$permissions)){
+                    $permissions[] = $item['permission'];
+                }
+            }
         }
 
         foreach ($check_against as $perm) {
-            if (!class_exists($perm)){
+            if (!class_exists($perm)) {
                 $perm = "permissions." . $perm;
                 $perm = str_replace(".", DIRECTORY_SEPARATOR, $perm);
             }
 
-            if (in_array($perm, $this->permissions)) {
+            if (in_array($perm, $permissions)) {
                 $return = true;
             }
         }
 
         $profiler->stop();
         return $return;
+    }
+
+    function fetchRoles() {
+        $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
+
+
+        $query = new Query();
+        $query->setSelect("
+            DISTINCT system_roles.id
+        ");
+        $query->setFrom("
+            system_roles
+                INNER JOIN
+                    system_users_roles ON system_users_roles.role_id = system_roles.id
+        ");
+        $query->setWhere(" 
+            system_users_roles.user_id = :user_id
+        ", array(
+            ":user_id" => $this->getId(),
+        ));
+
+        $records = $query->fetch();
+
+        $return = array();
+        foreach ($records as $item){
+            $return[] = $item['id'];
+        }
+
+
+        $profiler->stop();
+        return $return;
+    }
+    function getRoles() {
+        $return = false;
+        if ($this->roles == null && $this->getId()) {
+            $this->roles = $this->fetchRoles();
+        }
+        return (array) $this->roles;
     }
 
     /**
@@ -308,14 +433,8 @@ class UserModel extends AbstractModel {
         return $this->password;
     }
 
-    /**
-     * Set the value of password
-     *
-     * @return  self
-     */
-    protected function set_password($password) { 
+    protected function rawSetPassword($password) {
         $this->password = $password;
-
         return $this;
     }
     public function setPassword($password) {
@@ -348,5 +467,23 @@ class UserModel extends AbstractModel {
      */
     public function getSalt() {
         return $this->salt;
+    }
+
+    /**
+     * Get the value of last_active
+     */
+    public function getLastActive() {
+        return $this->last_active;
+    }
+
+    /**
+     * Set the value of last_active
+     *
+     * @return  self
+     */
+    public function setLastActive($last_active) {
+        $this->last_active = $last_active;
+
+        return $this;
     }
 }

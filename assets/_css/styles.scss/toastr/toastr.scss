@@ -1,0 +1,26 @@
+
+ @import "../variables";
+ @import "../../../node_modules/toastr/toastr.scss";
+ 
+ #toast-container > div {
+    @extend #{'.shadow'};
+  }
+  
+  
+  #toast-container > div:hover {
+    @extend #{'.shadow'};
+  }
+  
+  @each $color, $value in $theme-colors {
+    .toast-#{$color} {
+      background-color: $value;
+    }
+  }
+ 
+.toast-top-center {
+    top:4rem;
+}
+
+#toast-container > div {
+
+}

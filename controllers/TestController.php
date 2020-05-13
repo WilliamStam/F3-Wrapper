@@ -23,8 +23,10 @@ class TestController extends AbstractController {
     function page() {
         $profiler = System::profiler(__CLASS__ . "::" . __FUNCTION__, __NAMESPACE__);
         $format = $this->system->get("PARAMS")['FORMAT'];
+    
         if (strtolower($format) == "json") {
-            $this->system->set("FORMAT", Output::JSON);
+
+            $this->system->get("OUTPUT")->setFormat(Output::JSON);
         }
 
         $data = array();

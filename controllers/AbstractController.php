@@ -18,14 +18,16 @@ abstract class AbstractController extends _ {
             foreach ($data as $key => $value) {
                 $templateObject->$key = $value;
             }
-            $this->system->set("DATA", $data);
-            $this->system->set("BODY", $templateObject->render());
+            $this->system->get("OUTPUT")->setData($data);
+            $this->system->get("OUTPUT")->setBody($templateObject->render());
+
         } else {
             if (is_array($template)) {
                 $data = $template;
             }
-            $this->system->set("FORMAT", Output::JSON);
-            $this->system->set("DATA", $data);
+            $this->system->get("OUTPUT")->setFormat(Output::JSON);
+            $this->system->get("OUTPUT")->setData($data);
+            $this->system->get("OUTPUT")->setBody($templateObject->render());
         }
     }
 }

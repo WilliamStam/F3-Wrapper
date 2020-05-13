@@ -51,6 +51,8 @@ $system->set('VERSION', "v1");
 $system->set("CACHE", $system->get("CONFIG")['CACHE']);
 $system->set("DEBUG", $system->get("CONFIG")['DEBUG']);
 
+// System::debug($system);
+
 // what status messages to log to file on error (ignoring 404)
 // $system->set("LOGGABLE", "500");
 
@@ -67,9 +69,16 @@ $system->set("ERRORFILE", Strings::fixDirSlashes($system->get("LOGS") . "/" . St
 $system->set('DEBUG', $system->get("CONFIG")['DEBUG']);
 $system->set('DATA', array());
 $system->set('QUIET', true);
+$system->set('HALT', true);
 
 $system->set('PROFILER', new Collection());
-$system->set('PAGE_PROFILER', System::profiler("PAGE"));
+$system->set('OUTPUT', new Output());
+
+$page_profiler_string = "[".$system->get("VERB")."] ".$system->get("URI");
+if ($system->ajax()){
+    $page_profiler_string = "XHR - ". $page_profiler_string;
+}
+$system->set('PAGE_PROFILER', System::profiler($page_profiler_string));
 
 
 $system->set("ASSETS", Strings::fixDirSlashes($system->get("ROOT") . "/assets"));
@@ -107,7 +116,7 @@ $system->set("SID",$system->get('COOKIE.PHPSESSID'));
 
 
 if (!$system->get("SESSION.CSRF")) {
-    $system->set("SESSION.CSRF", $session->csrf());
+   $system->set("SESSION.CSRF", $session->csrf());
 }
 $profiler->stop();
 
@@ -119,85 +128,17 @@ $system->set("ONERROR", function ($system) {
         ob_end_clean();
     }
 
-    // your fresh page here:
-
     $error = $system->get("ERROR");
 
-    $key = md5($error['text'] . "|" . $error['trace']);
-
-    /* we want to do stuff on error. we also want to mask stuff if debug is off*/
-
-    switch ((string) $error['code']) {
-    case "404":
-        $template = "404.twig";
-        if (!$system->get('DEBUG')) {
-            $error['text'] = "The page you seek seems to have wandered off...";
-            $error['sub'] = "The page catches have been dispatched, but generally they seem to have a rather bad track record of finding missing pages. We keep them around because of Quota restrictions";
-        }
-        break;
-    case "401":
-        $template = "401.twig";
-        if (!$system->get('DEBUG')) {
-            $error['text'] = "Not allowed there";
-        }
-        break;
-    case "403":
-        $template = "403.twig";
-        break;
-    case "500":
-
-        $template = "500.twig";
-        if (!$system->get('DEBUG')) {
-            try {
-                /* lets log it to the DB */
-                $system->get("DB")->exec("
-                        INSERT INTO system_errors (
-                            `error_key`, `datetime_added`, `datetime_last`, `version`, `code`, `url`, `count`, `message`, `trace`
-                        ) VALUES (
-                            :KEY,now(),now(),:VERSION, :CODE, :URL, 1, :MESSAGE, :TRACE
-                        ) ON DUPLICATE KEY UPDATE
-                            `datetime_last` = VALUES(datetime_last),
-                            `count` = VALUES(count) + 1
-                    ", array(
-                    ":KEY" => $key,
-                    ":VERSION" => $system->get("VERSION"),
-                    ":CODE" => $error['code'],
-                    ":URL" => $system->get("URI"),
-                    ":MESSAGE" => $error['text'],
-                    ":TRACE" => $error['trace'],
-                ));
-
-            } catch (\Throwable $e) {
-                // we cant exactly let the writing to db throw an error on an error...
-            }
-
-            $error['status'] = "Internal Error";
-            $error['code'] = "500";
-            $error['text'] = "We hit a bridge at high speed";
-            $error['sub'] = "A team of highly trained forensic hamsters have been dispatched to scour through the wreckage and attempt to make sense of the situation.";
-        }
-
-        break;
-    default:
-        $template = "error.twig";
-        break;
+    $error_object = "\\system\\errors\\Error".$error['code'];
+    if (class_exists(($error_object))){
+        $error_object = new $error_object();
+    } else {
+        $error_object = new \system\errors\ErrorGeneric();
     }
+    $error_object->output();
 
-    $render = new Template("_errors/" . $template);
-    $render->code = $error['code'];
-    $render->status = $error['status'];
-    $render->text = $error['text'];
-    $render->sub = $error['sub'];
 
-    $output = new Output();
-    $output->setBody($render->render());
-    $output->setData($error);
-
-    $system->get('PAGE_PROFILER')->stop();
-    // need to force the output of the error here
-
-    $output->setProfiler($system->get("PROFILER"));
-    $output->output();
 
 });
 
@@ -220,7 +161,7 @@ if ($system->get("DEBUG")) {
 
 
 $system->set("USER",(new CurrentUserModel())->get($system->get("SID")));
-
+$system->get("USER")->setLastActive(Date("Y-m-d H:i:s"));
 
 
 
@@ -239,15 +180,19 @@ $system->set('VARIABLES', array(
 Controllers\_::routes($system);
 
 
-
-
 $system->run();
+try {
+
+} catch (\Throwable $w){
+    //System::debug($w);
+}
+
+
+$system->get("USER")->save();
+
 // $system->get("RESPONSE")->render();
 $system->get('PAGE_PROFILER')->stop();
 
-$output = new Output();
-$output->setBody($system->get("BODY"));
-$output->setData($system->get("DATA"));
-$output->setProfiler($system->get("PROFILER"));
-$output->output();
-// var_dump($output);
+
+$system->get("OUTPUT")->setProfiler($system->get("PROFILER"));
+$system->get("OUTPUT")->output();

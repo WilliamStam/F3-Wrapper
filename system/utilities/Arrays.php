@@ -93,4 +93,15 @@ class Arrays {
 
         return $return;
     }
+    static function removeKeyFromArray(&$array, $key_to_remove) {
+        foreach ($array as $key => &$value) {
+            if ($key === $key_to_remove) {
+                unset($array[$key]);
+            } elseif (is_array($value)) {
+                self::removeKeyFromArray($value, $key_to_remove);
+            }
+        }
+    }
+
+   
 }

@@ -26,7 +26,7 @@ class ResetController extends AbstractController {
 
         if ($this->system->get("VERB") == "POST") {
             $data['email'] = $this->system->get("POST.email");
-            $this->system->set("COOKIE.email", $data['email']);
+            $this->system->set("COOKIE.email", $data['email'], $this->system->get("CONFIG")['COOKIE_AGE']);
             
             $data['code'] = $this->system->get("POST.code");
             

@@ -1,109 +1,134 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border-bottom">
+<nav id="main-menu">
     <div class="container">
-        
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item{% if SYSTEM.get('ALIAS') == 'index' %} active{% endif %}">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/test.json">Test JSON</a>
-            </li>
-            <li class="nav-item{% if SYSTEM.get('ALIAS') == 'test_controller' %} active{% endif %}">
-                <a class="nav-link" href="/test.html">Test HTML</a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link" href="/404">404</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/500">500</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/php">PHP</a>
-            </li>
-            <li class="nav-item{% if SYSTEM.get('ALIAS') == 'admin_roles' %} active{% endif %}">
-                <a class="nav-link" href="{{ 'admin_roles'|route() }}">Roles</a>
-            </li>
-           
-        </ul>
-        {% if USER.getId() %}
-        <ul class="navbar-nav ml-auto">
-           
-            
-            <li class="nav-item">
-                <a class="nav-link" href="{{ 'index'|route() }}">
-                    <i class="fas fa-home"></i>
-                </a>
-            </li>
+        <a class="navbar-brand" href="#">{{ SYSTEM.get("PACKAGE") }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        </ul>
-        <ul class="navbar-nav ml-auto">
-           
-            <li class="nav-item">
-                <span class="navbar-text">
-                    {{ USER.getName() }}
-                </span>
-            </li>
 
-            {% if USER.hasSomePermissions([
-                'admin.Roles',
-                'admin.Roles2',
-                'admin.Roles3'
-            ]) %}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-cogs"></i>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                {% if USER.hasPermissions('admin.Roles') %}
-                  <a class="dropdown-item" href="{{ 'admin_roles'|route() }}">Roles</a>
-                  {% endif %}
-                  {% if USER.hasPermissions('admin.Roles2') %}
-                  <a class="dropdown-item" href="#">Roles2</a>
-                  {% endif %}
-                  {% if USER.hasPermissions('admin.Roles3') %}
-                  <a class="dropdown-item" href="#">Roles3</a>
-                  {% endif %}
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item{% if SYSTEM.get('ALIAS') == 'index' %} active{% endif %}">
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/test.json">Test JSON</a>
+                </li>
+                <li class="nav-item{% if SYSTEM.get('ALIAS') == 'test_controller' %} active{% endif %}">
+                    <a class="nav-link" href="/test.html">Test HTML</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Errors
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+
+                        {% set errorTest = [
+                        '401',
+                        '404',
+                        '500',
+                        '402',
+                    ] %}
+                        {% for er in errorTest %}
+                        {% set er_txt = er %}
+                        {% if er == "402" %}
+                        {% set er_txt = "Generic (402)" %}
+                        {% endif %}
+                        <a class="dropdown-item" href="{{ 'test_errors'|route('code='~er) }}">{{ er_txt }}</a>
+                        {% endfor %}
+
+
+
+
+                    </div>
+                </li>
+
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/php">PHP</a>
+                </li>
+
+
+            </ul>
+            {% if USER['id'] %}
+            <ul class="navbar-nav ml-auto">
+
+
+
+
+            </ul>
+            <ul class="navbar-nav ml-auto">
+
+
+
+                {% if USER._.hasSomePermissions([
+                    'admin.Roles',
+                    'admin.RolesCategories',
+                    'admin.Users',
+                    'admin.SystemStatus',
+                ]) %}
+                {% set active = "" %}
+                {% if SYSTEM.get('ALIAS') in [
+                    'admin_system_status',
+                    'admin_roles',
+                    'admin_roles_categories',
+                    'admin_users'
+                ] %}
+                {% set active = " active" %}
+                {% endif %}
+                <li class="nav-item dropdown{{ active }}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-cogs"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        {% if USER._.hasPermissions('admin.Roles') %}
+                        <a class="dropdown-item{% if SYSTEM.get('ALIAS') == 'admin_roles' %} active{% endif %}"
+                            href="{{ 'admin_roles'|route() }}">System Roles</a>
+                        {% endif %}
+                        {% if USER._.hasPermissions('admin.RolesCategories') %}
+                        <a class="dropdown-item{% if SYSTEM.get('ALIAS') == 'admin_roles_categories' %} active{% endif %}"
+                            href="{{ 'admin_roles_categories'|route() }}">Roles Categories</a>
+                        {% endif %}
+                        {% if USER._.hasPermissions('admin.Users') %}
+                        <a class="dropdown-item{% if SYSTEM.get('ALIAS') == 'admin_users' %} active{% endif %}"
+                            href="{{ 'admin_users'|route() }}">System Users</a>
+                        {% endif %}
+                        {% if USER._.hasPermissions('admin.SystemStatus') %}
+                        <a class="dropdown-item{% if SYSTEM.get('ALIAS') == 'admin_system_status' %} active{% endif %}"
+                            href="{{ 'admin_system_status'|route() }}">System Status</a>
+                        {% endif %}
+
+                    </div>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ 'auth_logout'|route() }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+
+            </ul>
+            {% else %}
+
+
+            <form class="form-inline my-2 my-lg-0" method="POST" action="{{ 'auth_login'|route() }}">
+                <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@">
+                <input type="hidden" name="from" value="{{ SYSTEM.get('URI') }}">
+                <input class="form-control mr-sm-2" type="email" placeholder="Email" aria-label="email" name="email"
+                    value="{{ 'COOKIE.email'|get() }}">
+                <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="password"
+                    name="password" value="">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+            </form>
+
             {% endif %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ 'auth_logout'|route() }}">
-                    <i class="fas fa-sign-out-alt"></i>
-                </a>
-            </li>
 
-        </ul>
-        {% else %}
-
-        
-        <form class="form-inline my-2 my-lg-0" method="POST" action="{{ 'auth_login'|route() }}">
-            <input type="hidden" name="@@CSRF_NAME@@" value="@@CSRF_TOKEN@@">
-            <input type="hidden" name="from" value="{{ SYSTEM.get('URI') }}">
-            <input class="form-control mr-sm-2" type="email" placeholder="Email" aria-label="email" name="email"
-                value="{{ 'COOKIE.email'|get() }}">
-                <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="password" name="password" value="">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
-        </form>
-        <ul class="navbar-nav">
-           
-            <li class="nav-item">
-                <a class="nav-link" href="{{ 'auth_login'|route() }}">Login</a>
-            </li>
-           
-        </ul>
-        {% endif %}
-
-    </div>
+        </div>
     </div>
 </nav>

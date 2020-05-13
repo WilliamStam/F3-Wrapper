@@ -1,6 +1,8 @@
 <?php
 declare (strict_types = 1);
 namespace system;
+
+use System\utilities\Arrays;
 use \system\utilities\Strings;
 
 class Output {
@@ -10,21 +12,19 @@ class Output {
     const HTML = "3";
 
     protected $BODY;
-    protected $DATA;
+    protected $DATA = array();
+    protected $FORMAT = self::AUTO;
+    protected $PROFILER = array();
 
     function __construct() {
 
     }
 
-    function setBody($body = null) {
-        $this->BODY = $body;
-        return $this;
-    }
-    function setData($body = null) {
-        $this->DATA = $body;
-        return $this;
-    }
     function setProfiler($profiler) {
+        $system = \Base::instance();
+        if (!$system->get("DEBUG")) {
+            return $this;
+        }
 
         $maxTime = 0;
         $maxMemory = 0;
@@ -99,33 +99,33 @@ class Output {
             $data['items'][] = $output;
         }
 
-        $this->DATA['PROFILER'] = $data;
+        $data['SQL'] = $system->get("DB")->log();
+        $data['id'] = Strings::toAscii(uniqid('', true));
+
+        $this->PROFILER = $data;
         return $this;
     }
 
     function output() {
         $system = \Base::instance();
-        $output = $system->get("FORMAT");
-        $output = strtolower($output);
 
-        if ($output == self::AUTO) {
-            $output = self::HTML;
+        if ($this->getFormat() == self::AUTO) {
+            $this->setFormat(self::HTML);
 
             if ($system->ajax()) {
-                $output = self::JSON;
+                $this->setFormat(self::JSON);
             }
             if (isset($_GET['json']) && $_GET['json']) {
-                $output = self::JSON;
+                $this->setFormat(self::JSON);
             }
         }
 
-        // var_dump($this);
         $body = "";
-        switch ($output) {
+        switch ($this->getFormat()) {
         case SELF::HTML:
             $timerStr = "";
             if ($system->get("DEBUG")) {
-                $profiler = json_encode($this->DATA['PROFILER']);
+                $profiler = json_encode($this->getProfiler());
                 $timerStr = <<<Timer
                         <script>
                         try {
@@ -138,27 +138,96 @@ class Output {
                         </script>
                         Timer;
             }
-            $body = str_replace("<!--PROFILER-->", $timerStr, $this->BODY);
+            $body = str_replace("<!--PROFILER-->", $timerStr, $this->getBody());
             break;
         case SELF::JSON:
             header("Content-Type: application/json");
-            $body = json_encode($this->DATA, JSON_PRETTY_PRINT);
+
+            $data = $this->getData();
+            if ($system->get("DEBUG")) {
+                $data['PROFILER'] = $this->getProfiler();
+                
+            }
+
+            Arrays::removeKeyFromArray($data, "_");
+
+            $body = json_encode($data, JSON_PRETTY_PRINT);
 
             break;
         }
 
         $body = $this->replace($body);
-        
+
         echo $body;
 
     }
-    function replace($text){
+    function replace($text) {
         $system = \Base::instance();
         $replace = array();
-        foreach ($system->get("VARIABLES") as $k=>$v){
-            $replace["@@".$k."@@"] = $v;
+        foreach ($system->get("VARIABLES") as $k => $v) {
+            $replace["@@" . $k . "@@"] = $v;
         };
         return strtr($text, $replace);
     }
 
+    /**
+     * Get the value of BODY
+     */
+    public function getBody() {
+        return $this->BODY;
+    }
+
+    /**
+     * Set the value of BODY
+     *
+     * @return  self
+     */
+    public function setBody($BODY) {
+        $this->BODY = $BODY;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of DATA
+     */
+    public function getData() {
+        return $this->DATA;
+    }
+
+    /**
+     * Set the value of DATA
+     *
+     * @return  self
+     */
+    public function setData($DATA) {
+        $this->DATA = $DATA;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of FORMAT
+     */
+    public function getFormat() {
+        return $this->FORMAT;
+    }
+
+    /**
+     * Set the value of FORMAT
+     *
+     * @return  self
+     */
+    public function setFormat($FORMAT) {
+        $this->FORMAT = $FORMAT;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of PROFILER
+     */
+    public function getProfiler() {
+        return $this->PROFILER;
+    }
 }

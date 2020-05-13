@@ -33,7 +33,7 @@ class RegisterController extends AbstractController {
             $data['email'] = $this->system->get("POST.email");
             $data['name'] = $this->system->get("POST.name");
 
-            $this->system->set("COOKIE.email", $data['email']);
+            $this->system->set("COOKIE.email", $data['email'], $this->system->get("CONFIG")['COOKIE_AGE']);
             
             $values['email'] = $data['email'];
             $values['name'] = $data['name'];

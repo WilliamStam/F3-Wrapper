@@ -32,7 +32,7 @@ class LoginController extends AbstractController {
 
             $password = $this->system->get("POST.password");
             
-            $this->system->set("COOKIE.email", $data['email']);
+            $this->system->set("COOKIE.email", $data['email'], $this->system->get("CONFIG")['COOKIE_AGE']);
 
             $loginObject = (new LoginModel($this->system->get("SID")));
             $login = $loginObject->login($data['email'],$password);

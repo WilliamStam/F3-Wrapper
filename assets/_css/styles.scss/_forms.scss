@@ -1,4 +1,16 @@
 form {
     margin:0;
     padding:0;
+
+    fieldset {
+        @extend #{'.mb-4'};
+    }
+    .form-check-label {
+        display:block;
+        cursor: pointer;
+    }
+}
+
+.form-action-bar {
+    @extend #{'.bg-white','.py-1', '.fixed-bottom', '.border-top','.shadow-sm'};
 }

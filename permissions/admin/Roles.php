@@ -1,12 +1,15 @@
 <?php
 namespace permissions\admin;
 
-use permissions\AbstractPermissions;
-use permissions\permissionsInterface;
+use permissions\permissionInterface;
 
-class Roles extends AbstractPermissions implements permissionsInterface {
+class Roles extends _ implements permissionInterface {
 
-    protected $description = "Admin Roles";
+    protected $label = "Roles";
+    protected $description = "This role will allow the user to edit system Roles";
+    protected $type = self::ROLE_TYPE_SYSTEM;
+
 
     
+
 }

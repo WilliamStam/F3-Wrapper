@@ -2,6 +2,7 @@
 declare (strict_types = 1);
 namespace system;
 
+use models\users\CurrentUserSchema;
 use system\utilities\Arrays;
 use system\utilities\Strings;
 use system\utilities\System;
@@ -22,6 +23,10 @@ class Template {
 
     public function __get($property) {
         return $this->DATA[$property];
+    }
+
+    function getData(){
+        return $this->DATA;
     }
 
     function render() {
@@ -46,6 +51,12 @@ class Template {
         }, ['needs_environment' => true]);
         $twig->addFilter($filter);
 
+       
+
+        $twig->addGlobal('SYSTEM',$system);
+        $twig->addGlobal('USER',(new CurrentUserSchema())->load($system->get("USER"))->toArray());
+
+
         $filter = new \Twig\TwigFilter('route', function (\Twig\Environment $env, $string, $options=false) use ($system) {
 
             $aliases = $system->get("ALIASES");
@@ -68,9 +79,7 @@ class Template {
             $twigData[$k] = $v;
         };
         $twigData['DEBUG'] = $system->get("DEBUG");
-        $twigData['USER'] = $system->get("USER");
-        $twigData['SYSTEM'] = $system;
-
+       
 
         $body = $twig->render($this->TEMPLATE, $twigData);
 

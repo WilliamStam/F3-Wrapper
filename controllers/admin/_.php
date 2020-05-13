@@ -14,7 +14,10 @@ class _ extends \controllers\AbstractController {
     }
     static function routes($system) {
 
-        $system->route("GET|POST @admin_roles: /admin/roles", "\\controllers\\admin\\RolesController->page");
+        $system->route("GET|POST|DELETE @admin_roles: /admin/roles", "\\controllers\\admin\\RolesController->page");
+        $system->route("GET|POST|DELETE @admin_roles_categories: /admin/roles/categories", "\\controllers\\admin\\RolesCategoriesController->page");
+        $system->route("GET|POST|DELETE @admin_users: /admin/users", "\\controllers\\admin\\UsersController->page");
+        $system->route("GET|POST|DELETE @admin_system_status: /admin/status", "\\controllers\\admin\\StatusController->page");
 
     }
 

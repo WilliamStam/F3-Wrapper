@@ -1,0 +1,60 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+
+            <form class="toolbar-form">
+                <nav class="toolbar">
+                    <button class="btn btn-primary record " type="button" data-id="new">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <div class="input-group w-50 flex-grow-1 ml-4">
+                        <input type="text" class="form-control" placeholder="Search" name="search" id="toolbar-search"
+                            value="<%= this.search||'' %>">
+
+                        <div class="input-group-append">
+                            <% if(this.search){ %>
+                            <button class="btn btn-danger" type="reset">
+                                <i class="fa fa-times"></i>
+                            </button>
+                            <% } %>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+
+            <table class="table records table-sm bg-white table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Last Active</th>
+                        <th>Time Ago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (var i in this.list){ %>
+                    <tr class="record" data-id="<%= this.list[i].id %>">
+                        <td><%= this.list[i].name %></td>
+                        <td><%= this.list[i].last_active||'' %></td>
+                        <td><%= this.list[i].timeago||'' %></td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+
+            <% if(!this.list.length){ %>
+            <div class="alert alert-warning text-center">
+                No records found
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>

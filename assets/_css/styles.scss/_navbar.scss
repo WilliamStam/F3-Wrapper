@@ -1,4 +1,5 @@
-.navbar {
+#main-menu {
+    @extend #{'.navbar', '.navbar-expand-lg', '.navbar-light', '.bg-light', '.border-bottom', '.fixed-top'};
     padding-top:0;
     padding-bottom:0;
     line-height: 1;
@@ -20,6 +21,9 @@
             padding-bottom: 1rem;
         }
         
-        
+    }
+    .dropdown-item {
+        padding-top:0.5rem;
+        padding-bottom:0.5rem;
     }
 }

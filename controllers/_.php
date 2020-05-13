@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 use \system\Assets;
-
+use \system\utilities\System;
 class _ {
     function __construct($system) {
         $this->system = $system;
@@ -61,16 +61,16 @@ class _ {
         });
 
         /* for testing purposes we set up some error routes */
-        $system->route("GET|POST|DELETE /500", function ($system) {
-            $t = strpos();
-            $render = new Render("trying a 500 error.twig");
-            $render->t = date("Y-m-d H:i:s");
-            echo $render->render($system);
-        });
-        $system->route("GET|POST|DELETE /401", function ($system) {
+        $system->route("GET|POST|DELETE @test_errors: /errors/@code", function ($system,$params) {
 
-            $system->error(401);
+            if ($params['code']=="500"){
+                $t = strpos();
+            }
+
+            //System::debug($params['code']);
+            $system->error($params['code']);
         });
+
 
 /* Assets and media routes. only change if you know what you are doing */
         $system->route("GET " . $system->get("STATIC") . "/*", function ($system) {

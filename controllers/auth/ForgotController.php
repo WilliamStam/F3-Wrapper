@@ -41,7 +41,7 @@ class ForgotController extends AbstractController {
         if ($this->system->get("VERB")=="POST"){
 
             $data['email'] = $this->system->get("POST.email");
-            $this->system->set("COOKIE.email", $data['email']);
+            $this->system->set("COOKIE.email", $data['email'], $this->system->get("CONFIG")['COOKIE_AGE']);
 
             $user = (new UserModel())
                 ->_where("email = :EMAIL",array(":EMAIL"=>$data['email']))

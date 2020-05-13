@@ -1,0 +1,144 @@
+{% if DEBUG %}
+
+<button type="button" class="btn btn-dark btn-sm fixed-bottom" data-toggle="modal" data-target="#profiler-modal"
+    id="profiler-button">
+    <i class="fas fa-stopwatch"></i>
+</button>
+
+
+
+<div class="modal fade" id="profiler-modal">
+    <div class="modal-dialog modal-lg modal-primary  bg-transparent" role="document">
+        <div class="modal-content  bg-transparent border-0">
+            <div class="modal-body bg-transparent p-0">
+                <div id="PROFILER"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/template" id="template-profiler">
+
+    <section class="bg-white text-x-small mb-4 py-2" id="system-profiler-display">
+        <ul class="nav nav-tabs" id="profiler-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="profiler-tabs-profiler-<%= this.id %>" data-toggle="tab" href="#profiler-pane-profiler-<%= this.id %>" role="tab" aria-controls="profiler-pane-profiler-<%= this.id %>" aria-selected="true">Profiler</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="profiler-tabs-sql" data-toggle="tab" href="#profiler-pane-sql-<%= this.id %>" role="tab" aria-controls="profiler-pane-sql-<%= this.id %>" aria-selected="false">SQL</a>
+            </li>
+           
+          </ul>
+          <div class="tab-content" id="profiler-panes">
+            <div class="tab-pane fade show active" id="profiler-pane-profiler-<%= this.id %>" role="tabpanel" aria-labelledby="profiler-tabs-profiler-<%= this.id %>">
+
+
+                <div class="container-fluid">
+
+                    <div class="row">
+                        
+                        <div class="col-7">
+                            Name
+                        </div>
+                        <div class="col-2">
+                            Component
+                        </div>
+                        <div class="col-1 text-right">
+                            Duration
+                        </div>
+                        <div class="col-2 text-right">
+                            Memory
+                        </div>
+                    </div>
+        
+                    <% for (var i in this.items){ %>
+                    <div class="row border-bottom item ">
+                        <div style=" width:<%= this.items[i]['time']['percent'] %>%; left:<%= this.items[i]['time']['offset'] %>%; background: #<%= this.items[i]['colour'] %>;" class="bar"></div>
+                        <div class="col-7">
+                            <span class="badge <% if(this.items[i]['count']>1){ %>badge-danger<% } else { %>badge-dark<% } %> mr-2"><%= this.items[i]['count'] %></span>
+                            <%= this.items[i]['label'] %>
+                        </div>
+                        <div class="col-2" >
+                            <span style="font-weight:bold; color: #<%= this.items[i]['colour'] %>; " class="component-label">
+                                <i class="fas fa-monument"></i>
+                            </span>
+                            <%= this.items[i]['component']||'' %>
+                        </div>
+                        <div class="col-1 text-right">
+                            <%= this.items[i]['time']['display'] %>
+                        </div>
+                        <div class="col-2 text-right">
+                            <%= this.items[i]['memory']['display'] %>
+                        </div>
+                    </div>
+                    <% } %>    
+                </div>
+
+
+            </div>
+            <div class="tab-pane fade" id="profiler-pane-sql-<%= this.id %>" role="tabpanel" aria-labelledby="profiler-tabs-sql-<%= this.id %>">
+                <code >
+<pre class="px-4 py-2 m-0 ">
+<%= this.SQL %>
+</pre>
+                </code>
+                
+            </div>
+          </div>
+
+
+    </section>
+    
+
+{#}
+
+
+    <table class="bg-white table table-sm text-xx-small" id="system-profiler-table">
+        <thead>
+            <tr>
+                <th>#</th>
+				<th>Name</th>
+				<th>Component</th>
+				<th>Duration</th>
+				<th>Memory</th>
+				<th style="width: 50%;">
+					
+				</th>
+			</tr>
+			</thead>
+			<tbody>
+			<% for (var i in this.items){ %>
+			<tr>
+				<td>
+					<%= this.items[i]['count'] %>
+				</td>
+				<td>
+
+					<%= this.items[i]['label'] %>
+
+
+				</td>
+				<td style="font-weight:bold; color: #<%= this.items[i]['colour'] %>;">
+                    <%= this.items[i]['component']||'' %>
+                </td>
+				<td>
+                    <%= this.items[i]['time']['display'] %>
+                </td>
+				<td>
+                    <%= this.items[i]['memory']['display'] %>
+                </td>
+				<td  style="width: 50%; position: relative;">
+                    <div style="width:<%= this.items[i]['time']['percent'] %>%; margin-left:<%= this.items[i]['time']['offset'] %>%; background: #<%= this.items[i]['colour'] %>;" class="h-100 text-center text-white ">&nbsp;</div>
+				</td>
+			</tr>
+			
+			<% } %>
+			</tbody>
+		</table>
+        {#}
+
+	</script>
+<!--PROFILER-->
+{% endif %}

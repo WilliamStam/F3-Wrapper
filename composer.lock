@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bcosca/fatfree-core.git",
-                "reference": "214cab50e4db56b7ef9327937c0bd421330f0686"
+                "reference": "e9f85720261c21fd5601a36bfb99d7b72dcda3ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bcosca/fatfree-core/zipball/214cab50e4db56b7ef9327937c0bd421330f0686",
-                "reference": "214cab50e4db56b7ef9327937c0bd421330f0686",
+                "url": "https://api.github.com/repos/bcosca/fatfree-core/zipball/e9f85720261c21fd5601a36bfb99d7b72dcda3ed",
+                "reference": "e9f85720261c21fd5601a36bfb99d7b72dcda3ed",
                 "shasum": ""
             },
             "require": {
@@ -35,7 +35,7 @@
             ],
             "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
             "homepage": "http://fatfreeframework.com/",
-            "time": "2020-04-16T17:07:37+00:00"
+            "time": "2020-05-07T19:07:45+00:00"
         },
         {
             "name": "filp/whoops",
@@ -43,12 +43,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "91b85b409109eae1b9bb17089e9c3297fe7cfedc"
+                "reference": "17d0d3f266c8f925ebd035cd36f83cf802b47d4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/91b85b409109eae1b9bb17089e9c3297fe7cfedc",
-                "reference": "91b85b409109eae1b9bb17089e9c3297fe7cfedc",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/17d0d3f266c8f925ebd035cd36f83cf802b47d4a",
+                "reference": "17d0d3f266c8f925ebd035cd36f83cf802b47d4a",
                 "shasum": ""
             },
             "require": {
@@ -96,7 +96,7 @@
                 "throwable",
                 "whoops"
             ],
-            "time": "2020-03-25T10:20:53+00:00"
+            "time": "2020-05-05T12:28:07+00:00"
         },
         {
             "name": "psr/log",
@@ -151,12 +151,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "4719fa9c18b0464d399f1a63bf624b42b6fa8d14"
+                "reference": "e94c8b1bbe2bc77507a1056cdb06451c75b427f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/4719fa9c18b0464d399f1a63bf624b42b6fa8d14",
-                "reference": "4719fa9c18b0464d399f1a63bf624b42b6fa8d14",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/e94c8b1bbe2bc77507a1056cdb06451c75b427f9",
+                "reference": "e94c8b1bbe2bc77507a1056cdb06451c75b427f9",
                 "shasum": ""
             },
             "require": {
@@ -168,7 +168,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.15-dev"
+                    "dev-master": "1.17-dev"
                 }
             },
             "autoload": {
@@ -201,7 +201,21 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2020-02-27T09:26:54+00:00"
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-05-12T16:14:59+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -209,12 +223,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "81ffd3a9c6d707be22e3012b827de1c9775fc5ac"
+                "reference": "fa79b11539418b02fc5e1897267673ba2c19419c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/81ffd3a9c6d707be22e3012b827de1c9775fc5ac",
-                "reference": "81ffd3a9c6d707be22e3012b827de1c9775fc5ac",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/fa79b11539418b02fc5e1897267673ba2c19419c",
+                "reference": "fa79b11539418b02fc5e1897267673ba2c19419c",
                 "shasum": ""
             },
             "require": {
@@ -226,7 +240,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.15-dev"
+                    "dev-master": "1.17-dev"
                 }
             },
             "autoload": {
@@ -260,7 +274,21 @@
                 "portable",
                 "shim"
             ],
-            "time": "2020-03-09T19:04:49+00:00"
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-05-12T16:47:27+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
@@ -268,12 +296,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "cb64c503a89a49bcf6334a57639e244e488b0fe9"
+                "reference": "5e30b2799bc1ad68f7feb62b60a73743589438dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/cb64c503a89a49bcf6334a57639e244e488b0fe9",
-                "reference": "cb64c503a89a49bcf6334a57639e244e488b0fe9",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/5e30b2799bc1ad68f7feb62b60a73743589438dd",
+                "reference": "5e30b2799bc1ad68f7feb62b60a73743589438dd",
                 "shasum": ""
             },
             "require": {
@@ -282,7 +310,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.15-dev"
+                    "dev-master": "1.17-dev"
                 }
             },
             "autoload": {
@@ -336,7 +364,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-04-23T15:16:55+00:00"
+            "time": "2020-05-12T16:47:27+00:00"
         },
         {
             "name": "symfony/var-dumper",
@@ -344,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "317278865a3dd48c31aab47fe3f23a31f409ac4b"
+                "reference": "8d1f467a76e7f48fa3f0661830eb371bf0b5d5f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/317278865a3dd48c31aab47fe3f23a31f409ac4b",
-                "reference": "317278865a3dd48c31aab47fe3f23a31f409ac4b",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/8d1f467a76e7f48fa3f0661830eb371bf0b5d5f4",
+                "reference": "8d1f467a76e7f48fa3f0661830eb371bf0b5d5f4",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +454,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-04-23T22:29:19+00:00"
+            "time": "2020-05-08T12:37:13+00:00"
         },
         {
             "name": "twig/twig",
@@ -434,12 +462,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "d0e2074a04fd2220d46686d2b3c9c92f1d444590"
+                "reference": "58296c9716ab98eb341f97c3113f6f286d608415"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d0e2074a04fd2220d46686d2b3c9c92f1d444590",
-                "reference": "d0e2074a04fd2220d46686d2b3c9c92f1d444590",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/58296c9716ab98eb341f97c3113f6f286d608415",
+                "reference": "58296c9716ab98eb341f97c3113f6f286d608415",
                 "shasum": ""
             },
             "require": {
@@ -510,7 +538,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-04-24T08:08:58+00:00"
+            "time": "2020-05-11T08:23:44+00:00"
         }
     ],
     "packages-dev": [],

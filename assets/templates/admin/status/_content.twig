@@ -1,0 +1,47 @@
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>System Errors</h1>
+
+
+            <table class="table table-sm table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Code</th>
+                        <th>URL</th>
+                        <th>Message</th>
+                        <th>Count</th>
+                        <th>First</th>
+                        <th>Last</th>
+                    </tr>
+                </thead>
+                <tbody class="text-xx-small bg-white">
+                    <% for (var i in this.errors){ %>
+                    <tr>
+                        <td>
+                            <%= this.errors[i].code %>
+                        </td>
+                        <td>
+                            <%= this.errors[i].url %>
+                        </td>
+                        <td>
+                            <%= this.errors[i].message %>
+                        </td>
+                        <td class="text-center">
+                            <%= this.errors[i].count %>
+                        </td>
+                        <td>
+                            <%= this.errors[i].datetime_added %>
+                        </td>
+                        <td>
+                            <%= this.errors[i].datetime_last %>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+           
+        </div>
+    </div>
+</div>

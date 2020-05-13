@@ -1,0 +1,6 @@
+.page-header {
+    @extend #{'.jumbotron','.m-0', '.py-4','.px-0'};
+}
+body {
+    padding-top:3rem;
+}

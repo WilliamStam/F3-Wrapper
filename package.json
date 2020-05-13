@@ -5,8 +5,10 @@
   "minimum-stability": "dev",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.1",
-    "bootstrap": "^4.4.1",
-    "jquery": "^3.5.1"
+    "bootstrap": "^4.5.0",
+    "jquery": "^3.5.1",
+    "lil-uri": "^0.2.2",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
     "gulp": "^4.0.2",

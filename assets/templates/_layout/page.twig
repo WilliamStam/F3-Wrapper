@@ -9,17 +9,34 @@
 
 
     <link rel="stylesheet" type="text/css" href="{{ ASSETS }}/css/styles.css">
-    {% block css %}{% endblock %}
+    {% block css_block %}{% endblock %}
 </head>
 
 <body>
     {% include "_layout/navbar.twig" %}
-    {% block content %}{% endblock %}
+    {% block content_block %}{% endblock content_block %}
 
     <script src="{{ ASSETS }}/js/libraries.js"></script>
-    {% block script %}{% endblock %}
+    <script type="text/javascript">
+		$.ajaxPrefilter(function(options, originalOptions, jqXHR){
+			if (options.type.toLowerCase() === "post") {
+				options.data = options.data || "";
+				options.data += options.data?"&":"";
+				options.data += "@@CSRF_NAME@@=" + encodeURIComponent('@@CSRF_TOKEN@@');
+			}
+		});
+	</script>
+    {% block script_block %}{% endblock script_block %}
 
-    {% include "_layout/profiler.twig" %}
+    {% include "_layout/_profiler.twig" %}
+    {% include "_layout/_loadingmask.twig" %}
+    
+    {% block templates_block %}{% endblock templates_block %}
+
+
+
+    
+
 </body>
 
 </html>
